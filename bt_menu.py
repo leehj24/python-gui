@@ -7,7 +7,7 @@ window.resizable(False, False)
 
 menubutton=tkinter.Menubutton(window,text="메뉴 메뉴 버튼", relief="raised", direction="right")
 menubutton.pack()
-
+#relief-버튼테두리모양
 hi=tkinter.Menu(menubutton, tearoff=0)
 hi.add_command(label="하위메뉴-1")
 hi.add_separator()
