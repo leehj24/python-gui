@@ -17,5 +17,6 @@ label.pack()
 
 button = tkinter.Button(window, overrelief="solid", width=15, command=countUP, repeatdelay=1000, repeatinterval=100)
 button.pack()
-
+#overrelief-버튼올렸을때 현상/ soild-검정테두리, 
+# flat-사라짐, groove-들어가지는 느낌/살짝 회색, raised, 눌렀을때 들어감, ridge-들어가지는 느낌/흰색
 window.mainloop()
