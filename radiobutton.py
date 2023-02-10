@@ -1,7 +1,7 @@
 import tkinter
 
 window=tkinter.Tk()
-window.title("YUN DAE HEE")
+window.title("radiobt")
 window.geometry("640x480+100+100")
 window.resizable(False, False)
 
