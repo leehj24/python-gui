@@ -21,6 +21,7 @@ radio2.pack()
 
 radio3=tkinter.Radiobutton(window, text="3번", value=9, variable=RadioVariety_1, command=check)
 radio3.pack()
+#라디오버튼 1,2,3누르면 1,2,3 버튼이 눌러지면서 값이 변화, 4,5을 누르면 1,2,3과 핪이 나옴
 
 label=tkinter.Label(window, text="None", height=0)
 label.pack()
