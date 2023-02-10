@@ -24,7 +24,7 @@ b1_1.pack(side="top", fill="x")
 
 b2.pack(side="bottom")
 b2_1.pack(side="bottom", anchor="e")
-
+#anchor할당된 공간내에서 위치 지정 (속성: center,n,e,s,w,ne,nw,se,sw)
 b3.pack(side="left")
 b3_1.pack(side="left", fill="y")
 
