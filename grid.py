@@ -22,7 +22,7 @@ b2.grid(row=0, column=1)
 b3.grid(row=0, column=2, pady="10") # padx, pady, 위젯에 대한 x,y방향 외부 패빙 
 
 b4.grid(row=1, column=0, rowspan=2) #rowspan 행위치 조정
-b5.grid(row=1, column=1, columnspan=3) #columspan duf위치 조정
+b5.grid(row=1, column=1, columnspan=3) #columspan 열위치 조정
 b6.grid(row=1, column=3)
 
 b7.grid(row=2, column=1, sticky="nw") #sticky 할당된 공간내에 위치 조정
