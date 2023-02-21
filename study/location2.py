@@ -6,67 +6,62 @@ import pandas as pd
 import matplotlib.pyplot as plt #pip install -U matplotlib
 import os
 
-window=tkinter.Tk()
-window.title("photo")
-window.geometry("640x640+300+100") #00x00 사이즈 00+00 윈도우 뜰 창 위치
-window.resizable(True, True)
+root=tkinter.Tk()
+root.title("photo")
+root.geometry("640x640+400+100") #00x00 사이즈 00+00 윈도우 뜰 창 위치
+root.resizable(True, True)
 
- #canvas에 있는 사진 위치
-
-"""
-label=tkinter.Label(window, image=images, width=335,height=350, relief= "solid")
-label.place(x=300, y=0) #canvas 위치
-images=tkinter.PhotoImage(file="images.png")"""
-
-
-"""
-canvas = tkinter.Canvas(window, width=300, height=300, background="white") #canvas 넓이
-canvas.place(x=340, y=0) #canvas 위치
-images=tkinter.PhotoImage(file="images.png")
-canvas.create_image(150, 150, image=images)"""
+def createNewWindow(): #버튼 누룰시 새로운 윈도우
+    #global new
+    #new= tkinter.Toplevel()
+    new = tkinter.Toplevel(root)
+    new.geometry("640x640+600+100")
+    canvas = tkinter.Canvas(new, background="white") 
+    canvas.pack() #canvas 위치
+    images=tkinter.PhotoImage(file="images.png")
+    canvas.create_image(150, 150, image=images)
+    
+buttonw = tkinter.Button(root, text="new window",command=createNewWindow)
+buttonw.place(x=250, y=10)
 
 def start():
-  canvas = tkinter.Canvas(window, width=300, height=300, background="white") #canvas 넓이
-  canvas.place(x=340, y=0) #canvas 위치
-  images=tkinter.PhotoImage(file="im.png")
-  canvas.create_image(150, 150, image=images)
-  
-  image2=tkinter.PhotoImage(file="image2.png")
-  canvas.create_image(x1_entry.get(),  y1_entry.get(), image=image2) 
+  images=tkinter.PhotoImage(file="images.png")
+  label=tkinter.Label(root, image=images, width=335,height=350, relief= "solid")
+  label.place(x=str(x1_entry.get()), y=str(y1_entry.get())) #canvas 위치 
   #시작버튼 누르면 x,y값에 따라 사진 넣고 싶은데 모르겠음
   
 def stop():
-  canvas = tkinter.Canvas(window, width=300, height=300, background="white") #canvas 넓이
+  canvas = tkinter.Canvas(root, width=300, height=300, background="white") #canvas 넓이
   canvas.place(x=340, y=0) #canvas 위치
   images=tkinter.PhotoImage(file="images.png")
   canvas.create_image(150, 150, image=images)
 
-b1=tkinter.Button(window, text="start", command=start)
-b2=tkinter.Button(window, text="stop", command=stop)
+b1=tkinter.Button(root, text="start", command=start)
+b2=tkinter.Button(root, text="stop", command=stop)
 b1.place(x=200, y=10) 
 b2.place(x=200, y=35)
 
 def result(n):
     lab.config(text="x,y="+ x1_entry.get()+ ","+ y1_entry.get())
     
-x1_label = tkinter.Label(window, text="x값")
+x1_label = tkinter.Label(root, text="x값")
 x1_label.place(x=10, y=10)
 
 
-x1_entry = tkinter.Entry(window)
+x1_entry = tkinter.Entry(root)
 x1_entry.place(x=10, y=35)
 
-y1_label = tkinter.Label(window, text="y값")
+y1_label = tkinter.Label(root, text="y값")
 y1_label.place(x=10, y=60)
 
-y1_entry = tkinter.Entry(window)
+y1_entry = tkinter.Entry(root)
 y1_entry.place(x=10, y=85)
 y1_entry.bind("<Return>", result)
 
-lab=tkinter.Label(window, text="x , y값")
+lab=tkinter.Label(root, text="x , y값")
 lab.place(x=10, y=110)
 
-file_frame = tkinter.Frame(window) 
+file_frame = tkinter.Frame(root) 
 file_frame.place(x=0, y=140) #폴더선택 위치
 
 def folder_select():
@@ -142,4 +137,4 @@ if __name__ == '__main__':
     logger.error('error message')
     logger.critical('critical message')
 
-window.mainloop()
+root.mainloop()
