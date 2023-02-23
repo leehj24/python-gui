@@ -18,16 +18,19 @@ class MyApp(QWidget):
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
-        self.draw_point(qp)
+        qp.setPen(QPen(Qt.blue,  8))
+        qp.drawPoint(100, 100)
         qp.end()
 
-    def draw_point(self, qp):
-        qp.setPen(QPen(Qt.blue,  8))
-        qp.drawPoint(self.width()/2, self.height()/2)
-        qp.setPen(QPen(Qt.green, 12))
-        qp.drawPoint(self.width()/4, 3*self.height()/4)
-        qp.setPen(QPen(Qt.red, 16))
-        qp.drawPoint(3 * self.width() / 4, self.height() / 4)
+    # def draw_point(self, qp):
+    #     qp.setPen(QPen(Qt.blue,  8))
+    #     qp.drawPoint(self.width()/2, self.height()/2)
+    #     qp.setPen(QPen(Qt.green, 12))
+    #     qp.drawPoint(self.width()/4, 3*self.height()/4)
+    #     qp.setPen(QPen(Qt.red, 16))
+    #     qp.drawPoint(3 * self.width() / 4, self.height() / 4)
+    # https://www.pythonguis.com/tutorials/pyqt6-qgraphics-vector-graphics/
+
 
 
 if __name__ == '__main__':

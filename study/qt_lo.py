@@ -40,7 +40,7 @@ class MyApp(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
         
-        trackList = [Track(10, 10), Track(50, 50)]
+        trackList = [Track(10, 10), Track(50, 50),Track(90, 90)]
         
         bev = BirdEyeView()
         bev.setObject(trackList)

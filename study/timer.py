@@ -18,9 +18,6 @@ class MainWindow(QWidget):
         self.setGeometry(300, 300, 300, 300)  # x, y, w, h
         self.setWindowTitle('QPaint Move')
 
-        # Timer 설정
-        
-
         # 창닫기 버튼
         btn = QPushButton('stop', self)
         btn.move(1,1)
@@ -54,7 +51,7 @@ class MainWindow(QWidget):
         
     def play(self):
         self.timer = QTimer(self)
-        self.timer.start(50)
+        self.timer.start(500)
         self.timer.timeout.connect(self.timeout_run)
         
 

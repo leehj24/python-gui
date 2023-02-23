@@ -8,20 +8,16 @@ class BirdEyeView(QWidget):
     
     def __init__(self):
         super().__init__()
-        self.x = 0
-        self.y = 0
+        self.pos_x = 0
+        self.speed = 1
+        self.direction = 1
         btn = QPushButton('play', self)
         btn.move(1,1)
-        btn.clicked.connect(self.paintEvent)
-        
-        # self.timer = QTimer(self)
-        # self.timer.start(600)
-        # self.timer.timeout.connect(self.timeout_run)
-        
+        btn.clicked.connect(self.play)
         btn2 = QPushButton('stop', self)
         btn2.move(100,1)
-        btn.clicked.connect(self.stop)
-        
+        btn2.clicked.connect(self.stop)
+
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
@@ -30,48 +26,22 @@ class BirdEyeView(QWidget):
         self.update()
         
     def draw_objects(self, qp):
-        self.timer = QTimer(self)
-        self.timer.start(600)
         qp.setPen(QPen(Qt.blue, 8))
-        self.trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-        for i in range(2):
-            for track in self.trackList:
-                self.trackList[i] = self.trackList[i+1]
-                qp.drawPoint(track.x, track.y)
-            print(self.trackList[i])
-            self.update()
+        qp.drawPoint(self.pos_x, 100)
         
+    def play(self):
+        self.timer = QTimer(self)
+        self.timer.start(30)
+        self.timer.timeout.connect(self.timeout_run)
         
-        for track in self.trackList:
-            qp.drawPoint(track.x, track.y)
-            
-           
-    def setObject(self, trackList):  
-        self.trackList = trackList
-        
-    # def timeout_run(self):
-    #     i=0
-    #     for i in range(2):
-    #         self.trackList[i] = self.trackList[i+1]
-    #         print(self.trackList[i])
-    #         self.update()
-
     def stop(self):
         self.timer.stop()
         
-        
-    # def timeout_run(self):
-    #     i=0
-    #     for i in self.trackList:
-    #         i =  i+1
-    #         if i < 100:
-    #             continue
-    #     self.update()
-               
-class Track:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def timeout_run(self):
+        if self.pos_x < 0 or self.pos_x > self.width() - 8:
+            self.direction *= -1
+        self.pos_x = self.pos_x + (self.direction * self.speed)
+        print(self.pos_x, self.width())
         
 class MyApp(QWidget):
 
@@ -81,13 +51,12 @@ class MyApp(QWidget):
 
     def initUI(self):
         grid = QGridLayout()
-     
+        
         bev = BirdEyeView()
-        bev.setObject(self)
-        grid.addWidget(bev, 0, 1) 
         
         self.lb = QLabel(self)
         
+        grid.addWidget(bev, 0, 1) 
         grid.addWidget(self.firstGroup(), 0, 0)
         grid.addWidget(self.secondGroup(), 1, 0)
         grid.addWidget(self.thirdGroup(), 2, 0)
@@ -95,7 +64,6 @@ class MyApp(QWidget):
         grid.addWidget(QTextBrowser(), 2, 1) #QScrollArea
               
         self.setLayout(grid)
-        grid = QGridLayout()
         
         self.setWindowTitle('Absolute Positioning')
         self.setGeometry(300, 300, 700, 600)
@@ -161,15 +129,6 @@ class MyApp(QWidget):
     def bt_play(self):
         self.timer = QTimer(self)
         self.timer.start(50)
-        self.timer.timeout.connect(self.timeout_run)
-    
-    def timeout_run(self):
-        i=0
-        for i in self.trackList:
-            i =  i+1
-            if i < 100:
-                continue
-        self.update()
     
     def bt_stop(self):
         self.timer.stop()
