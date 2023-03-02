@@ -6,48 +6,56 @@ from pandas import *
 import pandas as pd
 import matplotlib.pyplot as plt
 import pyqtgraph as pg
+from PyQt5 import QtWidgets,QtGui,QtCore
+
 
 class Track:
     def __init__(self, x, y):
         self.x = x
         self.y = y
         
-class BirdEyeView(QWidget):
+class BirdEyeView(QMainWindow):
     
-    trackList = [Track(0, 0)]
+    trackList = [Track(-2, -2)]
 
     def __init__(self):
         super().__init__()
         self.x = 0
         self.y = 0
-                
+        
+        self.label = QLabel()
+        canvas =QPixmap('car.png')
+        self.label.setPixmap(canvas)
+        widget = QWidget()
+        
+        vbox = QVBoxLayout(widget)
+        vbox.addWidget(self.label)
+        self.setCentralWidget(widget)
+        
     def paintEvent(self, e):
-        qp = QPainter()
+        qp = QPainter(self.label.pixmap())
         qp.begin(self)
         self.draw_objects(qp)
         qp.end()
         self.update()
         
-    def draw_objects(self, qp):
+    def draw_objects(self,qp):
         qp.setPen(QPen(Qt.blue, 8))
         
         for track in self.trackList:
             qp.drawPoint(track.x, track.y)
             
-           
     def setTrackList(self, trackList):  
         self.trackList = trackList
-        
-
                
 class MyApp(QWidget):
-
     trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-
+    
+        
     def __init__(self):
         super().__init__()
-        self.initUI()
-
+        self.initUI()  
+    
     def initUI(self):
         grid = QGridLayout()
      
@@ -93,10 +101,6 @@ class MyApp(QWidget):
     
     def secondGroup(self):
         groupbox = QGroupBox('버튼')
-        # table = QTableWidget()
-        
-        # btn1 = QPushButton('load', self)
-        # btn1.clicked.connect(lambda state, widget = table: self.button_load(state, widget))
         
         btn1 = QPushButton('click', self)
         btn1.clicked.connect(self.buttonClicked)
@@ -125,10 +129,6 @@ class MyApp(QWidget):
         table = QTableWidget()
         btn_load = QPushButton('load', self)
         btn_load.clicked.connect(lambda state, widget = table: self.button_load(state, widget))
-        # self.tableWidget = QTableWidget()
-        # self.tableWidget.setRowCount(2)
-        # self.tableWidget.setColumnCount(2)
-        # self.tableWidget.setItem(0,0,QTableWidgetItem('Apple'))
         layout = QVBoxLayout()
         layout.addWidget(table)
         layout.addWidget(btn_load)
@@ -153,13 +153,6 @@ class MyApp(QWidget):
         groupbox.setLayout(vbox)
         return groupbox
     
-    def bt_play(self):
-        self.timer = QTimer(self)
-        self.timer.start(50)
-
-    def bt_stop(self):
-        self.timer.stop()
-        
     def button_graph(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', './')
         self.data = []
@@ -176,11 +169,6 @@ class MyApp(QWidget):
 
         except FileNotFoundError:
             QMessageBox.warning(self, '파일이 없습니다.', '형식에 맞는 파일을 선택하시오')
-    
-    
-        # if filename[0]:
-        #     df = pd.read_csv(filename[0], index_col = 0)
-        #     self.create_graph(widget, df)
         
     def doubleclicked_listwidget(self): #그리고자 하는 column을 선택
         list_item = self.listwidget_01.selectedItems()
@@ -205,13 +193,12 @@ class MyApp(QWidget):
 
             plt.close()
             plt.plot(new_data, label=new_data.columns)
-            plt.xticks(rotation=90)
-            plt.margins(x=0,y=0)
+            # plt.xticks(rotation=30)
+            # plt.margins(x=0,y=0)
             legend = plt.legend()    
             legend.set_draggable(True) 
-            plt.grid(True)
+            plt.grid(True)#격자
             plt.show()      
-# 830-930
 
     def button_load(self, state, widget):
         filename = QFileDialog.getOpenFileName(self, 'Open file', './')
@@ -255,9 +242,10 @@ class MyApp(QWidget):
 
     def stop(self):
         self.timer.stop()        
-    
-        
+     
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MyApp()
-    sys.exit(app.exec_())
+    ex.show()
+    app.exec_()
+    # sys.exit(app.exec_())
