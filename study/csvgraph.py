@@ -6,8 +6,6 @@ from pandas import *
 import pandas as pd
 import matplotlib.pyplot as plt
 import pyqtgraph as pg
-from PyQt5 import QtWidgets,QtGui,QtCore
-
 
 class Track:
     def __init__(self, x, y):
@@ -16,7 +14,7 @@ class Track:
         
 class BirdEyeView(QMainWindow):
     
-    trackList = [Track(-2, -2)]
+    trackList = [Track(-5, -5)]
 
     def __init__(self):
         super().__init__()
@@ -24,26 +22,40 @@ class BirdEyeView(QMainWindow):
         self.y = 0
         
         self.label = QLabel()
-        canvas =QPixmap('car.png')
-        self.label.setPixmap(canvas)
+        self.canvas =QPixmap('car.png')
+        self.label.setPixmap(self.canvas)
+        widget = QWidget()
+        
+        # vbox = QVBoxLayout(widget)
+        # vbox.addWidget(self.label)
+        self.setCentralWidget(widget)
+        
+    def paintEvent(self, e):
+        qp = QPainter(self.label.pixmap())
+        self.timer = QTimer(self)
+        self.timer.start(50)
+        self.timer.timeout.connect(self.update_canvas)
+        
+        # qp.begin(self)      -painter already active 로그창 
+        self.draw_objects(qp)
+        # qp.end()
+        # self.update()
+
+    def draw_objects(self,qp):
+        qp.setPen(QPen(Qt.yellow, 8))
+        
+        for track in self.trackList:
+            qp.drawPoint(track.x, track.y)
+            
+    def update_canvas(self):
+        self.label = QLabel()
+        self.canvas =QPixmap('car.png')
+        self.label.setPixmap(self.canvas)
         widget = QWidget()
         
         vbox = QVBoxLayout(widget)
         vbox.addWidget(self.label)
         self.setCentralWidget(widget)
-        
-    def paintEvent(self, e):
-        qp = QPainter(self.label.pixmap())
-        qp.begin(self)
-        self.draw_objects(qp)
-        qp.end()
-        self.update()
-        
-    def draw_objects(self,qp):
-        qp.setPen(QPen(Qt.blue, 8))
-        
-        for track in self.trackList:
-            qp.drawPoint(track.x, track.y)
             
     def setTrackList(self, trackList):  
         self.trackList = trackList
@@ -65,11 +77,11 @@ class MyApp(QWidget):
         
         self.lb = QLabel(self)
         
-        grid.addWidget(self.firstGroup(), 0, 0)
-        grid.addWidget(self.secondGroup(), 1, 0)
-        grid.addWidget(self.thirdGroup(), 2, 0)
+        grid.addWidget(self.firstGroup(), 1, 0) #x,y,데이터
+        grid.addWidget(self.secondGroup(), 2, 0)# 버튼
+        grid.addWidget(self.thirdGroup(), 0, 0)#테이블
         grid.addWidget(self.lb, 3, 0)
-        grid.addWidget(self.fourGroup(), 2, 1)
+        grid.addWidget(self.fourGroup(), 1, 1)#그래프
         # grid.addWidget(QScrollArea(), 2, 1) #QTextBrowser
               
         self.setLayout(grid)
@@ -105,9 +117,6 @@ class MyApp(QWidget):
         btn1 = QPushButton('click', self)
         btn1.clicked.connect(self.buttonClicked)
         
-        btn2 = QPushButton('dialog', self)
-        btn2.clicked.connect(self.dialog)
-        
         btn3 = QPushButton('play', self)
         btn3.clicked.connect(self.play)
         
@@ -116,7 +125,6 @@ class MyApp(QWidget):
         
         vbox = QVBoxLayout()
         vbox.addWidget(btn1)
-        vbox.addWidget(btn2)
         vbox.addWidget(btn3)
         vbox.addWidget(btn4)
         groupbox.setLayout(vbox)
@@ -222,12 +230,6 @@ class MyApp(QWidget):
     def buttonClicked(self):
         self.lb.setText('self.x,y')
         
-    def dialog(self):
-        d= QDialog
-        d.setWindowTitle('Dialog')
-        d.setWindowModality(Qt.ApplicationModal)
-        d.setGeometry(300, 300, 700, 700)
-        d.show()
         
     def timeout_run(self):
         for track in self.trackList:
