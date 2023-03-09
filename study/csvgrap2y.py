@@ -123,9 +123,13 @@ class MyApp(QWidget):
         
         self.pbar = QProgressBar(self)
         self.pbar.setGeometry(0,0,250,30)
+        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider.valueChanged.connect(self.pbar.setValue)
+        self.pbar.valueChanged.connect(self.slider.setValue)
         
         vbox = QVBoxLayout()
         vbox.addWidget(self.pbar)
+        vbox.addWidget(self.slider)
         
         hbox = QHBoxLayout()
         hbox.addWidget(btn2)
@@ -166,8 +170,8 @@ class MyApp(QWidget):
         logTextBox.setOpenExternalLinks(True)
 
         logging.getLogger().setLevel(logging.DEBUG)
-        logging.debug('debug')
-        logging.info('info')
+        # logging.debug('debug')
+        # logging.info('info')
         
         text = logging.debug,logging.info
         logTextBox.append(str(text))
@@ -200,7 +204,7 @@ class MyApp(QWidget):
         self.timer.timeout.connect(self.timeout_run)
 
     def stop(self):
-        self.timer.stop()        
+        self.timer.stop()       
      
 if __name__ == '__main__':
     app = QApplication(sys.argv)
