@@ -18,19 +18,17 @@ class Lane:
 
 class BirdEyeView(QWidget):
     trackList = [Track(-5, -5)]
-    leftLane = [Lane(0,0,0,0)]
-    rightLane = [Lane(0,0,0,0)]
+    # leftLane = [Lane(0,0,0,0)]
+    # rightLane = [Lane(0,0,0,0)]
 
     def __init__(self):
         super().__init__()
         self.x = 0
         self.y = 0
-        self.r = 0.1
-        self.z = 0.1
         
         self.label = QLabel()
         self.canvas = QPixmap(500, 500)
-        self.canvas.fill(Qt.black)
+        self.canvas.fill(QColor('black'))
         self.label.setPixmap(self.canvas)
 
         self.car = QPixmap('car.png')
@@ -52,10 +50,10 @@ class BirdEyeView(QWidget):
         qp.eraseRect(self.canvas.rect())
 
         self.draw_objects(qp)
-        self.draw_lane(qp)
+        # self.draw_lane(qp)
         # self.draw_Lane(qp)
 
-        qp.drawPixmap(QRect(10, 10, 10, 30), self.car)
+        qp.drawPixmap(QRect(100, 300, 10, 30), self.car)
 
         qp.end()
 
@@ -65,13 +63,13 @@ class BirdEyeView(QWidget):
         for track in self.trackList:
             qp.drawPoint(track.x, track.y)
 
-    def draw_lane(self, qp):
-        #y = ax^3 + bx^2 + cx + d
-        qp.setPen(QPen(Qt.red, 3))
-        for lane in self.leftLane:
-            for r in np.arange(-3, 500, 0.1):
-                z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                qp.drawPoint(r,z)
+    # def draw_lane(self, qp):
+    #     #y = ax^3 + bx^2 + cx + d
+    #     qp.setPen(QPen(Qt.red, 3))
+    #     for lane in self.leftLane:
+    #         for r in np.arange(-3, 500, 0.1):
+    #             z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
+    #             qp.drawPoint(r,z)
 
     # def draw_Lane(self, qp):
     #     qp.setPen(QPen(Qt.blue, 3))
@@ -88,8 +86,8 @@ class BirdEyeView(QWidget):
     def setTrackList(self, trackList):
         self.trackList = trackList
 
-    def setLane(self, leftLane):
-        self.leftLane = leftLane
+    # def setLane(self, leftLane):
+    #     self.leftLane = leftLane
 
-    def setlane(self, rightLane):
-        self.rightLane = rightLane
+    # def setlane(self, rightLane):
+    #     self.rightLane = rightLane

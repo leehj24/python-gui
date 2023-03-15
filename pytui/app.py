@@ -13,7 +13,7 @@ from birdeyeview import *
 
 class MyApp(QMainWindow):   
     trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-    leftLane=[Lane(1,0,1,1)]
+    # leftLane=[Lane(1,0,1,1)]
     # rightLane=[Lane(1,5,3,1)]
 
     def __init__(self):
@@ -75,14 +75,10 @@ class MyApp(QMainWindow):
         
         self.step = 0
         
-        self.pbar = QProgressBar(self)
-        self.pbar.setGeometry(0,0,250,30)
         self.slider = QSlider(Qt.Horizontal, self)
-        self.slider.valueChanged.connect(self.pbar.setValue)
-        self.pbar.valueChanged.connect(self.slider.setValue)
-        
+        self.slider.valueChanged.connect(self.slider.setValue)
+    
         vbox = QVBoxLayout()
-        vbox.addWidget(self.pbar)
         vbox.addWidget(self.slider)
         
         hbox = QHBoxLayout()
@@ -135,24 +131,18 @@ class MyApp(QMainWindow):
         logTextBox.setOpenExternalLinks(True)
 
         logging.getLogger().setLevel(logging.DEBUG)
-        # logging.debug('debug')
-        # logging.info('info')
         
         text = logging.debug,logging.info
         logTextBox.append(str(text))
         
-        # log_1 = QScrollArea()
         vbox = QVBoxLayout()
         vbox.addWidget(logTextBox)
         groupbox.setLayout(vbox)
         return groupbox
-
-    def buttonClicked(self):
-        self.lb.setText('self.x,y')
         
     def timeout_run(self):
         if self.isStart:
-            self.bev.setLane(self.leftLane)
+            # self.bev.setLane(self.leftLane)
             # self.bev.setlane(self.rightLane)
             for track in self.trackList:
                 track.x = track.x + 3
@@ -161,11 +151,10 @@ class MyApp(QMainWindow):
             
             if self.step >= 100:
                 self.step=0
-                # self.timer.stop()
                 return
             
             self.step = self.step + 1
-            self.pbar.setValue(self.step)
+            self.slider.setValue(self.step)
         
     def play(self):
         if not self.isStart:
