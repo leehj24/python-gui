@@ -10,12 +10,11 @@ import pyqtgraph as pg
 import logging
 from pathlib import Path
 from birdeyeview import *
-
-class MyApp(QMainWindow):   
+class MyApp(QMainWindow):
     trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-    # leftLane=[Lane(1,0,1,1)]
-    # rightLane=[Lane(1,5,3,1)]
-
+    leftLane=[Lane(1,0,1,1)]
+    # rightLane=[Lane(1,5,3,1)
+    
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -77,7 +76,7 @@ class MyApp(QMainWindow):
         
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.valueChanged.connect(self.slider.setValue)
-    
+        
         vbox = QVBoxLayout()
         vbox.addWidget(self.slider)
         
@@ -131,26 +130,31 @@ class MyApp(QMainWindow):
         logTextBox.setOpenExternalLinks(True)
 
         logging.getLogger().setLevel(logging.DEBUG)
+        # logging.debug('debug')
+        # logging.info('info')
         
         text = logging.debug,logging.info
         logTextBox.append(str(text))
         
+        # log_1 = QScrollArea()
         vbox = QVBoxLayout()
         vbox.addWidget(logTextBox)
         groupbox.setLayout(vbox)
         return groupbox
+
+    def buttonClicked(self):
+        self.lb.setText('self.x,y')
         
     def timeout_run(self):
         if self.isStart:
-            # self.bev.setLane(self.leftLane)
-            # self.bev.setlane(self.rightLane)
             for track in self.trackList:
                 track.x = track.x + 3
-                
             self.bev.setTrackList(self.trackList)
-            
+            self.bev.setLane(self.leftLane)
+             
             if self.step >= 100:
                 self.step=0
+                # self.timer.stop()
                 return
             
             self.step = self.step + 1
