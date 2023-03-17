@@ -73,7 +73,6 @@ class BirdEyeView(QWidget):
             qp.drawPoint(track.x, track.y)
 
     def draw_lane(self, qp):
-        i=0
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.leftLane:
             for r in list(np.arange(-500, 500, 1)):
