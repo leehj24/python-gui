@@ -12,8 +12,8 @@ from pathlib import Path
 from birdeyeview import *
 class MyApp(QMainWindow):
     trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-    leftLane=[Lane(1,0,1,1)]
-    # rightLane=[Lane(1,5,3,1)
+    leftLane=[Lane(-1,5,1,1)]
+    rightLane=[Lane(1,5,1,1)]
     
     def __init__(self):
         super().__init__()
@@ -151,6 +151,7 @@ class MyApp(QMainWindow):
                 track.x = track.x + 3
             self.bev.setTrackList(self.trackList)
             self.bev.setLane(self.leftLane)
+            self.bev.setlane(self.rightLane)
              
             if self.step >= 100:
                 self.step=0

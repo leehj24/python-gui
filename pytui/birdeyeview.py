@@ -40,6 +40,7 @@ class BirdEyeView(QWidget):
         self.timer.start(30)
         self.timer.timeout.connect(self.onTimer)
         
+        
     def onTimer(self):
         self.update()
 
@@ -52,7 +53,7 @@ class BirdEyeView(QWidget):
         self.draw_lane(qp)
         # self.draw_Lane(qp)
         
-        qp.drawPixmap(300, 400, self.car)
+        qp.drawPixmap(QRect(250, 400, 10, 30), self.car)
 
         qp.end()
 
@@ -65,16 +66,16 @@ class BirdEyeView(QWidget):
     def draw_lane(self, qp):
         qp.setPen(QPen(Qt.red, 3))
         for lane in self.leftLane:
-            for x in np.arange(-3, 500, 1):
-                y = lane.a*x**3 + lane.b*x**2 + lane.c*x + lane.d
-                qp.drawPoint(x,y)
+            for r in np.arange(-3, 500, 1):
+                z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
+                qp.drawPoint(r,z)
                 
     # def draw_Lane(self, qp):
-    #     qp.setPen(QPen(Qt.red, 3))
-        # for lane in self.leftLane:
-        #     for x in np.arange(-3, 500, 1):
-        #         y = lane.a*x**3 + lane.b*x**2 + lane.c*x + lane.d
-        #         qp.drawPoint(x,y)
+    #     qp.setPen(QPen(Qt.blue, 3))
+    #     for lane in self.rightLane:
+    #         for r in np.arange(50, 600, 0.1):
+    #             z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
+    #             qp.drawPoint(r,z)
             
 
     def setTrackList(self, trackList):
