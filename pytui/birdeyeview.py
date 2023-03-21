@@ -26,7 +26,7 @@ class BirdEyeView(QWidget):
         
         self.label = QLabel()
         self.canvas = QPixmap(self.width(),self.height())
-        self.canvas.fill(QColor("black"))
+        self.canvas.fill(QColor("#000000"))
         self.label.setPixmap(self.canvas)
 
         self.car = QPixmap('car.png')
@@ -55,7 +55,6 @@ class BirdEyeView(QWidget):
 
     def paintEvent(self, e):
         qp = QPainter(self.label.pixmap())
-
         qp.eraseRect(self.canvas.rect())
 
         self.draw_objects(qp)
@@ -73,20 +72,20 @@ class BirdEyeView(QWidget):
             qp.drawPoint(track.x, track.y)
 
     def draw_lane(self, qp):
+        i=0
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.leftLane:
             for r in list(np.arange(-500, 500, 1)):
                 z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                qp.drawPoint(r+250,z+200)
+                qp.drawPoint(r+int(self.width()/3),z+200)
                 
     def draw_Lane(self, qp):
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.rightLane:
-            for x in np.arange(-500, 500, 1):
-                y = lane.a*x**3 + lane.b*x**2 + lane.c*x + lane.d
-                qp.drawPoint(x+400,y+200)
+            for r in np.arange(-500, 500, 1):
+                z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
+                qp.drawPoint(r+int(self.width()/2),z+200)
             
-
     def setTrackList(self, trackList):
         self.trackList = trackList
 

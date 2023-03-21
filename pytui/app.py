@@ -25,16 +25,19 @@ class MyApp(QMainWindow):
 
         widget = QWidget()
         grid = QGridLayout(widget)
-     
-        self.lb = QLabel(self)
         
         grid.addWidget(self.firstGroup(), 0, 0)
         grid.addWidget(self.createBevGroup(), 1, 0) 
         grid.addWidget(self.secondGroup(), 2, 0)# 버튼
         grid.addWidget(self.log(), 3, 0) #QTextBrowser, QScrollArea
-              
-        # self.setLayout(grid)
-        self.setCentralWidget(widget)
+        
+        self.scroll = QScrollArea()
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(widget)
+        
+        self.setCentralWidget(self.scroll)
         self.setWindowTitle('Absolute Positioning')
         self.setGeometry(300, 50, 500, 800)
         self.show()
@@ -141,9 +144,6 @@ class MyApp(QMainWindow):
         vbox.addWidget(logTextBox)
         groupbox.setLayout(vbox)
         return groupbox
-
-    def buttonClicked(self):
-        self.lb.setText('self.x,y')
         
     def timeout_run(self):
         if self.isStart:
