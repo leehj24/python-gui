@@ -39,7 +39,7 @@ class MyApp(QMainWindow):
         
         self.setCentralWidget(self.scroll)
         self.setWindowTitle('Absolute Positioning')
-        self.setGeometry(300, 50, 500, 800)
+        self.setGeometry(300, 50, 800, 900)
         self.show()
         
     def firstGroup(self):

@@ -16,8 +16,8 @@ class Lane:
 class BirdEyeView(QWidget):
     
     trackList = [Track(-5, -5)]
-    leftLane = [Lane(0,0,0,0)]
-    rightLane = [Lane(0,0,0,0)]
+    leftLane = [Lane(0,0,0,-300)]
+    rightLane = [Lane(0,0,0,-300)]
     
     def __init__(self):
         super().__init__()
