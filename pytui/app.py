@@ -12,8 +12,8 @@ from pathlib import Path
 from birdeyeview import *
 class MyApp(QMainWindow):
     trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-    leftLane=[Lane(-1,5,1,1)]
-    rightLane=[Lane(1,5,1,1)]
+    leftLane=[Lane(1,-3, 4,1)]#-1,-3,-15,1
+    rightLane=[Lane(1,-3, 4,1)]
     
     def __init__(self):
         super().__init__()
@@ -39,7 +39,7 @@ class MyApp(QMainWindow):
         
         self.setCentralWidget(self.scroll)
         self.setWindowTitle('Absolute Positioning')
-        self.setGeometry(300, 50, 800, 900)
+        self.setGeometry(300, 50, 750, 950)
         self.show()
         
     def firstGroup(self):
@@ -61,19 +61,15 @@ class MyApp(QMainWindow):
         
         layout = QFormLayout()
         button = QHBoxLayout()
-    
-        btn2 = QPushButton('select_csv', self)
-        btn2.clicked.connect(self.select_csv)
+
+        btn = QPushButton('play', self)
+        btn.clicked.connect(self.play)
         
-        btn3 = QPushButton('play', self)
-        btn3.clicked.connect(self.play)
+        btn2 = QPushButton('stop', self)
+        btn2.clicked.connect(self.stop)
         
-        btn4 = QPushButton('stop', self)
-        btn4.clicked.connect(self.stop)
-        
+        button.addWidget(btn)
         button.addWidget(btn2)
-        button.addWidget(btn3)
-        button.addWidget(btn4)
         
         self.step = 0
         
@@ -84,9 +80,8 @@ class MyApp(QMainWindow):
         vbox.addWidget(self.slider)
         
         hbox = QHBoxLayout()
+        hbox.addWidget(btn)
         hbox.addWidget(btn2)
-        hbox.addWidget(btn3)
-        hbox.addWidget(btn4)
         
         layout.addRow(vbox)
         layout.addRow(button)
@@ -100,7 +95,6 @@ class MyApp(QMainWindow):
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.bev)
-
         groupbox = QGroupBox('BirdEyeView')
         groupbox.setLayout(vbox)
 
@@ -112,18 +106,16 @@ class MyApp(QMainWindow):
             path = Path(file_name)
             self.filename.setText(str(path))
             
-    def select_csv(self):
-        file = QFileDialog.getOpenFileName(self)   
-        # if file:
-        #     path = Path(file)
-        #     self.filename.setText(str(path))
-                 
-        data = pd.read_csv(file[0])
+        txt = path.read_text()
+        f=open('data.csv','w',encoding='utf-8',newline="")
+        f.write(txt)
+        f.close()
+        
+        data = pd.read_csv("data.csv")
         plt.plot(data.num, data.a)
         plt.plot(data.num, data.a1)
         plt.plot(data.num, data.b)
         plt.plot(data.num, data.b1)
-        # print (data)
         plt.show()
         
     def log(self):
@@ -137,9 +129,8 @@ class MyApp(QMainWindow):
         # logging.info('info')
         
         text = logging.debug,logging.info
-        logTextBox.append(str(text))
+        logTextBox.append(str(self.trackList))
         
-        # log_1 = QScrollArea()
         vbox = QVBoxLayout()
         vbox.addWidget(logTextBox)
         groupbox.setLayout(vbox)
@@ -155,7 +146,6 @@ class MyApp(QMainWindow):
              
             if self.step >= 100:
                 self.step=0
-                # self.timer.stop()
                 return
             
             self.step = self.step + 1

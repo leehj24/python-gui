@@ -16,8 +16,8 @@ class Lane:
 class BirdEyeView(QWidget):
     
     trackList = [Track(-5, -5)]
-    leftLane = [Lane(0,0,0,-300)]
-    rightLane = [Lane(0,0,0,-300)]
+    leftLane = [Lane(0,0,0,1000)]
+    rightLane = [Lane(0,0,0,1000)]
     
     def __init__(self):
         super().__init__()
@@ -25,7 +25,7 @@ class BirdEyeView(QWidget):
         self.y = 0
         
         self.label = QLabel()
-        self.canvas = QPixmap(self.width(),self.height())
+        self.canvas = QPixmap(self.width(),self.width())
         self.canvas.fill(QColor("#000000"))
         self.label.setPixmap(self.canvas)
 
@@ -44,13 +44,11 @@ class BirdEyeView(QWidget):
         
     def wheelEvent(self, event: QWheelEvent):
         if event.angleDelta().y()>=0:
-            self.canvas = QPixmap(self.width(),self.height()+50)
-            self.canvas.fill(QColor("black"))
+            self.canvas = QPixmap(self.width(),self.width())
             self.label.setPixmap(self.canvas)
             
         if event.angleDelta().y()<0:
-            self.canvas = QPixmap(self.width()-int(self.width()/4),self.height()-100)
-            self.canvas.fill(QColor("black"))
+            self.canvas = QPixmap(self.width()-100,self.width()-100)
             self.label.setPixmap(self.canvas)
 
     def paintEvent(self, e):
@@ -72,19 +70,19 @@ class BirdEyeView(QWidget):
             qp.drawPoint(track.x, track.y)
 
     def draw_lane(self, qp):
-        i=0
+
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.leftLane:
             for r in list(np.arange(-500, 500, 0.1)):
                 z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                qp.drawPoint(6*r+int(self.width()/3),z+200)
+                qp.drawPoint(40*r+int(self.width()/5),int(self.height()/2)-12*z)
                 
     def draw_Lane(self, qp):
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.rightLane:
-            for r in np.arange(-500, 500, 1):
+            for r in np.arange(-500, 500, 0.1):
                 z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                qp.drawPoint(r+int(self.width()/2),z+200)
+                qp.drawPoint(10*r+int(self.width()/1.5),int(self.height()/2)-z)
             
     def setTrackList(self, trackList):
         self.trackList = trackList
