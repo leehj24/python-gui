@@ -12,7 +12,7 @@ from pathlib import Path
 from birdeyeview import *
 class MyApp(QMainWindow):
     trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-    leftLane=[Lane(1,-3, 4,1)]#-1,-3,-15,1
+    leftLane=[Lane(1/6,-1/2, 4,1)]#-1,-3,-15,1 # 1/6,-1/2, 4,1 #10,-1, 4,1
     rightLane=[Lane(1,-3, 4,1)]
     
     def __init__(self):

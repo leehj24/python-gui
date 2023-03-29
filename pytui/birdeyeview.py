@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
+from PIL import Image
 import numpy as np
 class Track:
     def __init__(self, x, y):
@@ -58,15 +59,25 @@ class BirdEyeView(QWidget):
         self.draw_objects(qp)
         self.draw_lane(qp)
         self.draw_Lane(qp)
+    
+        transform = QTransform()
+        transform.translate(int(self.width()/2)-60,self.height()-100)
+        transform.scale(1, 1)
+        # transform.transposed(Image.FLIP_LEFT_RIGHT)
+        qp.setTransform(transform)
+        qp.drawPixmap(0,0, self.car)
         
-        qp.drawPixmap(int(self.width()/2)-50,self.height()-100, self.car)
-
-        qp.end()
+        # qp.end()
 
     def draw_objects(self, qp):
         qp.setPen(QPen(Qt.red, 8))
         
         for track in self.trackList:
+            transform = QTransform()
+            transform.translate(int(self.width()/3), int(self.height()))
+            transform.rotate(270)
+            transform.scale(1, 1)
+            qp.setTransform(transform)
             qp.drawPoint(track.x, track.y)
 
     def draw_lane(self, qp):
@@ -75,14 +86,27 @@ class BirdEyeView(QWidget):
         for lane in self.leftLane:
             for r in list(np.arange(-500, 500, 0.1)):
                 z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                qp.drawPoint(40*r+int(self.width()/5),int(self.height()/2)-12*z)
+            
+                transform = QTransform()
+                transform.translate(int(self.width()/3), int(self.height()/2))
+                transform.rotate(0)
+                transform.scale(1, 1)
+                qp.setTransform(transform)
+                
+                qp.drawPoint(10*r,15*z)
                 
     def draw_Lane(self, qp):
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.rightLane:
             for r in np.arange(-500, 500, 0.1):
                 z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                qp.drawPoint(10*r+int(self.width()/1.5),int(self.height()/2)-z)
+                
+                transform = QTransform()
+                transform.translate(int(self.width()/2), int(self.height()/2))
+                transform.rotate(270)
+                transform.scale(1, 1)
+                qp.setTransform(transform)
+                qp.drawPoint(z,r)
             
     def setTrackList(self, trackList):
         self.trackList = trackList
