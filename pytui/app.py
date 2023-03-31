@@ -100,18 +100,18 @@ class MyApp(QMainWindow):
 
         return groupbox
     
-    def file_op(self):
+    def file_op(self): # 파일선택
         file_name, self.file = QFileDialog.getOpenFileName(self) 
         if file_name:
             path = Path(file_name)
-            self.filename.setText(str(path))
+            self.filename.setText(str(path)) #파일 경로
             
-        txt = path.read_text()
+        txt = path.read_text() #선택한 파일 읽기
         f=open('data.csv','w',encoding='utf-8',newline="")
-        f.write(txt)
+        f.write(txt) #파일 저장
         f.close()
         
-        data = pd.read_csv("data.csv")
+        data = pd.read_csv("data.csv") #저장한 파일 pd로 읽기
         plt.plot(data.num, data.a)
         plt.plot(data.num, data.a1)
         plt.plot(data.num, data.b)

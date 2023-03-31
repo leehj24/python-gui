@@ -17,8 +17,8 @@ class Lane:
 class BirdEyeView(QWidget):
     
     trackList = [Track(-5, -5)]
-    leftLane = [Lane(0,0,0,1000)]
-    rightLane = [Lane(0,0,0,1000)]
+    leftLane = [Lane(0,0,0,2000)]
+    rightLane = [Lane(0,0,0,2000)]
     
     def __init__(self):
         super().__init__()
@@ -43,7 +43,7 @@ class BirdEyeView(QWidget):
     def onTimer(self):
         self.update()
         
-    def wheelEvent(self, event: QWheelEvent):
+    def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
         if event.angleDelta().y()>=0:
             self.canvas = QPixmap(self.width(),self.width())
             self.label.setPixmap(self.canvas)
@@ -56,15 +56,16 @@ class BirdEyeView(QWidget):
         qp = QPainter(self.label.pixmap())
         qp.eraseRect(self.canvas.rect())
 
-        self.draw_objects(qp)
-        self.draw_lane(qp)
-        self.draw_Lane(qp)
+        self.draw_objects(qp) # object 
+        self.draw_lane(qp) #왼쪽 차선
+        self.draw_Lane(qp) #오른쪽 차선
     
-        transform = QTransform()
-        transform.translate(int(self.width()/2)-60,self.height()-100)
+        transform = QTransform() # self.car 좌표변환
+        transform.translate(int(self.width()/2)-60,self.height()-100) 
         transform.scale(1, 1)
         # transform.transposed(Image.FLIP_LEFT_RIGHT)
         qp.setTransform(transform)
+        
         qp.drawPixmap(0,0, self.car)
         
         # qp.end()
@@ -74,7 +75,7 @@ class BirdEyeView(QWidget):
         
         for track in self.trackList:
             transform = QTransform()
-            transform.translate(int(self.width()/3), int(self.height()))
+            transform.translate(int(self.width()/3), int(self.height())) # 좌표변환
             transform.rotate(270)
             transform.scale(1, 1)
             qp.setTransform(transform)
@@ -96,6 +97,7 @@ class BirdEyeView(QWidget):
                 qp.drawPoint(10*r,15*z)
                 
     def draw_Lane(self, qp):
+        
         qp.setPen(QPen(Qt.blue, 3))
         for lane in self.rightLane:
             for r in np.arange(-500, 500, 0.1):
