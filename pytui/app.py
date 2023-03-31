@@ -1,120 +1,179 @@
+import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
-from PIL import Image
-import numpy as np
-class Track:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-class Lane:
-    def __init__(self, a, b, c, d):
-        self.a = a
-        self.b = b
-        self.c = c
-        self.d = d
-class BirdEyeView(QWidget):
-    
-    trackList = [Track(-5, -5)]
-    leftLane = [Lane(0,0,0,2000)]
-    rightLane = [Lane(0,0,0,2000)]
+from pandas import *
+import pandas as pd
+import matplotlib.pyplot as plt
+import pyqtgraph as pg
+import logging
+from pathlib import Path
+from birdeyeview import *
+class MyApp(QMainWindow):
+    trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
+    leftLane=[Lane(-1,5,1,1)]
+    rightLane=[Lane(1,5,1,1)]
     
     def __init__(self):
         super().__init__()
-        self.x = 0
-        self.y = 0
-        
-        self.label = QLabel()
-        self.canvas = QPixmap(self.width(),self.width())
-        self.canvas.fill(QColor("#000000"))
-        self.label.setPixmap(self.canvas)
+        self.initUI()
 
-        self.car = QPixmap('car.png')
-
-        self.Layout = QVBoxLayout(self)
-        self.Layout.addWidget(self.label)
-        self.setLayout(self.Layout)
-
-        self.timer = QTimer(self)
-        self.timer.start(30)
-        self.timer.timeout.connect(self.onTimer)
-        
-    def onTimer(self):
-        self.update()
-        
-    def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
-        if event.angleDelta().y()>=0:
-            self.canvas = QPixmap(self.width(),self.width()) # ui 증가 
-            self.label.setPixmap(self.canvas)
-            
-        if event.angleDelta().y()<0:
-            self.canvas = QPixmap(self.width()-100,self.width()-100) #ui 감소
-            self.label.setPixmap(self.canvas)
-
-    def paintEvent(self, e):
-        qp = QPainter(self.label.pixmap())
-        qp.eraseRect(self.canvas.rect())
-
-        self.draw_objects(qp) # object 
-        self.draw_lane(qp) #왼쪽 차선
-        self.draw_Lane(qp) #오른쪽 차선
+        self.isStart = False  
     
-        transform = QTransform() # self.car 좌표변환
-        transform.translate(int(self.width()/2)-60,self.height()-100) #좌표위치
-        transform.scale(1, 1)
-        # transform.transposed(Image.FLIP_LEFT_RIGHT)
-        qp.setTransform(transform)
-        
-        qp.drawPixmap(0,0, self.car)
-        
-        # qp.end()
+    def initUI(self):
 
-    def draw_objects(self, qp):
-        qp.setPen(QPen(Qt.red, 8))
+        widget = QWidget()
+        grid = QGridLayout(widget)
         
-        for track in self.trackList:
-            transform = QTransform()
-            transform.translate(int(self.width()/3), int(self.height())) # 좌표변환
-            transform.rotate(270) #회전 각도
-            transform.scale(1, 1)
-            qp.setTransform(transform)
-            qp.drawPoint(track.x, track.y)
+        grid.addWidget(self.firstGroup(), 0, 0)
+        grid.addWidget(self.createBevGroup(), 1, 0) 
+        grid.addWidget(self.secondGroup(), 2, 0)# 버튼
+        grid.addWidget(self.log(), 3, 0) #QTextBrowser, QScrollArea
+        
+        self.scroll = QScrollArea()
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(widget)
+        
+        self.setCentralWidget(self.scroll)
+        self.setWindowTitle('Absolute Positioning')
+        self.setGeometry(300, 50, 800, 900)
+        self.show()
+        
+    def firstGroup(self):
+        groupbox = QGroupBox('파일')
+        btn_2 = QPushButton('select_csv', self)
+        btn_2.clicked.connect(self.file_op)
+        
+        self.filename = QLineEdit()
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel('File'))
+        hbox.addWidget(self.filename)
+        hbox.addWidget(btn_2)
+    
+        groupbox.setLayout(hbox)
+        return groupbox
+    
+    def secondGroup(self):
+        groupbox = QGroupBox('버튼')
+        
+        layout = QFormLayout()
+        button = QHBoxLayout()
+    
+        btn2 = QPushButton('select_csv', self)
+        btn2.clicked.connect(self.select_csv)
+        
+        btn3 = QPushButton('play', self)
+        btn3.clicked.connect(self.play)
+        
+        btn4 = QPushButton('stop', self)
+        btn4.clicked.connect(self.stop)
+        
+        button.addWidget(btn2)
+        button.addWidget(btn3)
+        button.addWidget(btn4)
+        
+        self.step = 0
+        
+        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider.valueChanged.connect(self.slider.setValue)
+        
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.slider)
+        
+        hbox = QHBoxLayout()
+        hbox.addWidget(btn2)
+        hbox.addWidget(btn3)
+        hbox.addWidget(btn4)
+        
+        layout.addRow(vbox)
+        layout.addRow(button)
 
-    def draw_lane(self, qp):
+        groupbox.setLayout(layout)
+        
+        return groupbox
+    
+    def createBevGroup(self):
+        self.bev = BirdEyeView()
 
-        qp.setPen(QPen(Qt.blue, 3))
-        for lane in self.leftLane:
-            for r in list(np.arange(-500, 500, 0.1)):
-                z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.bev)
+
+        groupbox = QGroupBox('BirdEyeView')
+        groupbox.setLayout(vbox)
+
+        return groupbox
+    
+    def file_op(self):
+        file_name, self.file = QFileDialog.getOpenFileName(self) 
+        if file_name:
+            path = Path(file_name)
+            self.filename.setText(str(path))
             
-                transform = QTransform()
-                transform.translate(int(self.width()/3), int(self.height()/2))
-                transform.rotate(0)
-                transform.scale(1, 1)
-                qp.setTransform(transform)
-                
-                qp.drawPoint(10*r,15*z)
-                
-    def draw_Lane(self, qp):
+    def select_csv(self):
+        file = QFileDialog.getOpenFileName(self)   
+        # if file:
+        #     path = Path(file)
+        #     self.filename.setText(str(path))
+                 
+        data = pd.read_csv(file[0])
+        plt.plot(data.num, data.a)
+        plt.plot(data.num, data.a1)
+        plt.plot(data.num, data.b)
+        plt.plot(data.num, data.b1)
+        # print (data)
+        plt.show()
         
-        qp.setPen(QPen(Qt.blue, 3))
-        for lane in self.rightLane:
-            for r in np.arange(-500, 500, 0.1):
-                z = lane.a*r**3 + lane.b*r**2 + lane.c*r + lane.d
-                
-                transform = QTransform()
-                transform.translate(int(self.width()/2), int(self.height()/2))
-                transform.rotate(270)
-                transform.scale(1, 1)
-                qp.setTransform(transform)
-                qp.drawPoint(z,r)
+    def log(self):
+        groupbox = QGroupBox('로그')
+        logTextBox = QTextBrowser(self)
+        logTextBox.setAcceptRichText(True)
+        logTextBox.setOpenExternalLinks(True)
+
+        logging.getLogger().setLevel(logging.DEBUG)
+        # logging.debug('debug')
+        # logging.info('info')
+        
+        text = logging.debug,logging.info
+        logTextBox.append(str(text))
+        
+        # log_1 = QScrollArea()
+        vbox = QVBoxLayout()
+        vbox.addWidget(logTextBox)
+        groupbox.setLayout(vbox)
+        return groupbox
+        
+    def timeout_run(self):
+        if self.isStart:
+            for track in self.trackList:
+                track.x = track.x + 3
+            self.bev.setTrackList(self.trackList)
+            self.bev.setLane(self.leftLane)
+            self.bev.setlane(self.rightLane)
+             
+            if self.step >= 100:
+                self.step=0
+                # self.timer.stop()
+                return
             
-    def setTrackList(self, trackList):
-        self.trackList = trackList
+            self.step = self.step + 1
+            self.slider.setValue(self.step)
+        
+    def play(self):
+        if not self.isStart:
+            self.timer = QTimer(self)
+            self.timer.start(50)
+            self.timer.timeout.connect(self.timeout_run)
+            self.isStart = True
 
-    def setLane(self, leftLane):
-        self.leftLane = leftLane
-
-    def setlane(self, rightLane):
-        self.rightLane = rightLane
+    def stop(self):
+        self.timer.stop()
+        self.isStart = False
+     
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    myapp = MyApp()
+    myapp.show()
+    app.exec_()
