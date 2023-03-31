@@ -45,11 +45,11 @@ class BirdEyeView(QWidget):
         
     def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
         if event.angleDelta().y()>=0:
-            self.canvas = QPixmap(self.width(),self.width())
+            self.canvas = QPixmap(self.width(),self.width()) # ui 증가 
             self.label.setPixmap(self.canvas)
             
         if event.angleDelta().y()<0:
-            self.canvas = QPixmap(self.width()-100,self.width()-100)
+            self.canvas = QPixmap(self.width()-100,self.width()-100) #ui 감소
             self.label.setPixmap(self.canvas)
 
     def paintEvent(self, e):
@@ -61,7 +61,7 @@ class BirdEyeView(QWidget):
         self.draw_Lane(qp) #오른쪽 차선
     
         transform = QTransform() # self.car 좌표변환
-        transform.translate(int(self.width()/2)-60,self.height()-100) 
+        transform.translate(int(self.width()/2)-60,self.height()-100) #좌표위치
         transform.scale(1, 1)
         # transform.transposed(Image.FLIP_LEFT_RIGHT)
         qp.setTransform(transform)
@@ -76,7 +76,7 @@ class BirdEyeView(QWidget):
         for track in self.trackList:
             transform = QTransform()
             transform.translate(int(self.width()/3), int(self.height())) # 좌표변환
-            transform.rotate(270)
+            transform.rotate(270) #회전 각도
             transform.scale(1, 1)
             qp.setTransform(transform)
             qp.drawPoint(track.x, track.y)
