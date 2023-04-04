@@ -48,23 +48,26 @@ class BirdEyeView(QWidget):
     def onTimer(self):
         self.update()
     
-    def UPC(self,e): #마우스휠 그리드
-        label = QLabel()
-        self.up_canvas = QPixmap(self.width(),self.width())
-        self.canvas.fill(Qt.black)
-        # label.width(self.center_x)
-        # label.height(self.center_x)
-        label.setPixmap(self.up_canvas)
-        return self.up_canvas
-    
-    def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
+    def UPC(self,event: QWheelEvent): #마우스휠 그리드
+        # label = QLabel()
+        up_canvas = QPixmap()
+        up_canvas.fill(Qt.black)
+        canvas_x = up_canvas.width()
+        canvas_y = up_canvas.height()
+        self.label.setPixmap(up_canvas)
+        
         if event.angleDelta().y()>=0:
-            painter = QPainter(self) # ui 증가 
-            painter.drawPixmap(self.UPC(100, 100))
+            up_canvas = QPainter(self) # ui 증가 
+            up_canvas.drawPixmap(canvas_x,canvas_y)
             
         if event.angleDelta().y()<0:
-            self.canvas = QPixmap(self.width()-100,self.width()-100) #ui 감소
+            up_canvas = QPixmap(up_canvas.width,up_canvas.width) #ui 감소
             self.label.setPixmap(self.canvas)
+            
+        return up_canvas
+    
+    def wheelEvent(self, up_canvas): #마우스 휠 이벤트 ui 크기 변경
+        up_canvas.drawPixmap(self.UPC(100, 100))
         
     # def wheelEvent(self,label): #마우스 휠 이벤트 ui 크기 변경
     #     wheel = QWheelEvent
