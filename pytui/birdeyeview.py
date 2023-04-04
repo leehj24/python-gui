@@ -19,8 +19,7 @@ class BirdEyeView(QWidget):
     trackList = [Track(-5, -5)]
     leftLane = [Lane(0.0001, 0.01, -0.174, -1.5)]
     rightLane = [Lane(0.0001, 0.01, -0.174, 1.5)]
-
-    scale_factor = 50
+    scale_factor = 50 #그리드 사이즈 증가
     
     def __init__(self):
         super().__init__()
@@ -49,7 +48,7 @@ class BirdEyeView(QWidget):
     def onTimer(self):
         self.update()
     
-    def UPC(self,e):
+    def UPC(self,e): #마우스휠 그리드
         label = QLabel()
         self.up_canvas = QPixmap(self.width(),self.width())
         self.canvas.fill(Qt.black)
