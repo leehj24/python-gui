@@ -57,19 +57,19 @@ class BirdEyeView(QWidget):
         self.label.setPixmap(up_canvas)
         
         if event.angleDelta().y()>=0:
-            up_canvas = QPainter(self) # ui 증가 
-            up_canvas.drawPixmap(canvas_x,canvas_y)
+            painter = QPainter(self) # ui 증가 
+            painter.drawPixmap(canvas_x ,canvas_y , up_canvas)
             
         if event.angleDelta().y()<0:
-            up_canvas = QPainter(self) # ui 증가 
-            up_canvas.drawPixmap(canvas_x,canvas_y)
+            painter = QPainter(self) # ui 증가 
+            painter.drawPixmap(canvas_x - 10, canvas_y-10 , up_canvas)
             # up_canvas = QPixmap(up_canvas.width,up_canvas.width) #ui 감소
             # self.label.setPixmap(self.canvas)
             
         return up_canvas
     
-    def WheelEvent(self, up_canvas): #마우스 휠 이벤트 ui 크기 변경
-        up_canvas.drawPixmap(self.UPC(100, 100))
+    # def WheelEvent(self, up_canvas): #마우스 휠 이벤트 ui 크기 변경
+    #     up_canvas.drawPixmap(self.UPC(100, 100))
         
     # def wheelEvent(self,label): #마우스 휠 이벤트 ui 크기 변경
     #     wheel = QWheelEvent
