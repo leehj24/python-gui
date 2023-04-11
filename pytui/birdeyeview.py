@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
-from PIL import Image
 import numpy as np
 class Track:
     def __init__(self, x, y):
@@ -23,10 +22,7 @@ class BirdEyeView(QWidget):
     
     def __init__(self):
         super().__init__()
-        
-        self.x = 0
-        self.y = 0
-        
+
         self.setLayout(QHBoxLayout())
         self.label = QLabel()
         self.canvas = QPixmap(self.width(),self.width())
@@ -87,20 +83,21 @@ class BirdEyeView(QWidget):
     def UPC(self, x_m,y_m):
         label = QLabel()
         up_canvas = QPixmap()
-        up_canvas.width(int( self.canvas_x + y_m*self.scale_factor))
-        up_canvas.height(int(self.canvas_y - x_m*self.scale_factor))
+        up_canvas.width(int( self.canvas_x))
+        up_canvas.height(int(self.canvas_y))
         self.canvas.fill(Qt.black)
         label.setPixmap(up_canvas)
-        return up_canvas
+        # return up_canvas
         
     def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
         # print(self.canvas_x)
         if event.angleDelta().y()>=0:
             painter = QPainter(self) # ui 증가 
-            painter.drawPixmap(int(self.canvas_x), int(self.canvas_y))
+            painter.drawPixmap(self.UPC(10,10),self.UPC(10,10))
+            
     
         if event.angleDelta().y()<0:
-            self.canvas = QPixmap(int(self.canvas_x)-10, int(self.canvas_y)-10) #ui 감소
+            self.canvas = QPixmap(int(self.canvas_x)-100, int(self.canvas_y)-100) #ui 감소
             self.label.setPixmap(self.canvas)
             
     # def wheelEvent(self,label): #마우스 휠 이벤트 ui 크기 변경
@@ -110,9 +107,8 @@ class BirdEyeView(QWidget):
     #     if wheel.angleDelta().y()<0:
     #         label.drawPixmap(self.UPC(-100, 0)) # ui 증가 
     
-    def upgrade(self):
-        mouse = QMouseEvent
-        if mouse.buttons() & Qt.LeftButton:
+    def upgrade(self,event=QMouseEvent):
+        if event.buttons() & Qt.LeftButton:
             canvas = QPixmap(self.UPC(100,100),self.UPC(100,100))
             canvas.fill(Qt.black)
             self.label.setPixmap(canvas)

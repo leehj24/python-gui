@@ -6,7 +6,6 @@ from PyQt5 import *
 from pandas import *
 import pandas as pd
 import matplotlib.pyplot as plt
-import pyqtgraph as pg
 import logging
 from pathlib import Path
 from birdeyeview import *
