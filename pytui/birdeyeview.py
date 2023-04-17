@@ -40,6 +40,7 @@ class BirdEyeView(QWidget):
         
         # self.Layout = QVBoxLayout(self)
         # self.Layout.addWidget(self.label,0)
+         # self.sizegrip = QSizeGrip(self)
         # self.Layout.addWidget(self.sizegrip,1)
         
         # self.layout().setSpacing(0)
@@ -54,6 +55,9 @@ class BirdEyeView(QWidget):
         
         self.canvas_x = self.canvas.width()+20
         self.canvas_y = self.canvas.height()+20
+        
+        self.canvas_x1 = self.canvas.width()-20
+        self.canvas_y1 = self.canvas.height()-20
 
         self.timer = QTimer(self)
         self.timer.start(30)
@@ -80,24 +84,24 @@ class BirdEyeView(QWidget):
         point.setY(int(self.center_y - x_m*self.scale_factor))
         return point
     
-    def UPC(self, x_m,y_m):
-        label = QLabel()
-        up_canvas = QPixmap()
-        up_canvas.width(int( self.canvas_x))
-        up_canvas.height(int(self.canvas_y))
-        self.canvas.fill(Qt.black)
-        label.setPixmap(up_canvas)
-        # return up_canvas
+    def UPC(self):
+        
+        label2 = QLabel()
+        up_canvas2 = QPixmap()
+        up_canvas2.width(int( self.canvas_x1))
+        up_canvas2.height(int(self.canvas_y1))
+        self.canvas2.fill(Qt.black)
+        label2.setPixmap(up_canvas2)
+        return up_canvas2
         
     def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
         # print(self.canvas_x)
         if event.angleDelta().y()>=0:
             painter = QPainter(self) # ui 증가 
             painter.drawPixmap(self.UPC(10,10),self.UPC(10,10))
-            
     
         if event.angleDelta().y()<0:
-            self.canvas = QPixmap(int(self.canvas_x)-100, int(self.canvas_y)-100) #ui 감소
+            self.canvas = QPixmap(self.UPC(10,10),self.UPC(10,10)) #ui 감소
             self.label.setPixmap(self.canvas)
             
     # def wheelEvent(self,label): #마우스 휠 이벤트 ui 크기 변경

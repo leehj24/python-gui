@@ -124,8 +124,6 @@ class MyApp(QMainWindow):
         logTextBox.setOpenExternalLinks(True)
 
         logging.getLogger().setLevel(logging.DEBUG)
-        # logging.debug('debug')
-        # logging.info('info')
         
         text = logging.debug,logging.info
         logTextBox.append(str(self.trackList))
