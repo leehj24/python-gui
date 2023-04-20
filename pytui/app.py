@@ -145,8 +145,8 @@ class MyApp(QMainWindow):
                 self.step=0
                 return
             
-            self.step = self.step + 1
-            self.slider.setValue(self.step)
+            self.step = self.step + 0.5
+            self.slider.setValue(int(self.step))
         
     def play(self):
         if not self.isStart:
