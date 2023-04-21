@@ -10,9 +10,9 @@ import logging
 from pathlib import Path
 from birdeyeview import *
 class MyApp(QMainWindow):
-    trackList = [Track(-300, -15)]
-    leftLane = [Lane(0, 0, 0, -1)]
-    rightLane = [Lane(0, 0, 0, 1)]
+    trackList = [Track(-300, -30)]
+    leftLane = [Lane(0, 0, 0, -0.5)]
+    rightLane = [Lane(0, 0, 0, 0.5)]
     
     def __init__(self):
         super().__init__()

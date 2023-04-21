@@ -8,9 +8,6 @@ class Track:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        
-        # self.data = pd.read_csv("data.csv", index_col=['x','y'], enconding ='co949')
-        # self.xy = self.data['x','y']
 class Lane:
     def __init__(self, a, b, c, d):
         self.a = a
@@ -20,10 +17,10 @@ class Lane:
 class BirdEyeView(QWidget):
     
     trackList = [Track(-400, 0)]
-    leftLane = [Lane(0, 0, 0, -1)] #0.0001, 0.01, -0.174, -1.5
-    rightLane = [Lane(0, 0, 0, 1)] #0.0001, 0.01, -0.174, 1.5
+    leftLane = [Lane(0, 0, 0, -0.5)] #0.0001, 0.01, -0.174, -1.5
+    rightLane = [Lane(0, 0, 0, 0.5)] #0.0001, 0.01, -0.174, 1.5
     scale_factor = 50 #그리드 사이즈 증가
-    scale_factor2 = 1
+    target_factor = 1 # 타켓차 그리즈 사이즈 변경
     
     def __init__(self):
         super().__init__()
@@ -42,18 +39,6 @@ class BirdEyeView(QWidget):
         self.UpdateWidget.layout().addWidget(self.label)
 
         self.layout().addWidget(self.UpdateWidget)
-        
-        # self.Layout = QVBoxLayout(self)
-        # self.Layout.addWidget(self.label,0)
-         # self.sizegrip = QSizeGrip(self)
-        # self.Layout.addWidget(self.sizegrip,1)
-        
-        # self.layout().setSpacing(0)
-        # self.layout().setContentsMargins(0,0,0,0)
-        # self.UpdateWidget.layout().setSpacing(4)
-        # self.UpdateWidget.layout().setContentsMargins(0,0,0,0)
-        
-        # self.setLayout(self.Layout)
 
         self.center_x = self.canvas.width()/2
         self.center_y = self.canvas.height()/2
@@ -75,7 +60,8 @@ class BirdEyeView(QWidget):
         qp = QPainter(self.label.pixmap())
         qp.fillRect(self.canvas.rect(),Qt.black)
 
-        self.draw_grid(qp)
+        self.draw_grid(qp) # 그리드 좌표선
+        self.target_lane(qp) # 타겟 관련 좌표선
         
         self.draw_objects(qp) # object 
         self.draw_lane(qp, self.leftLane) #왼쪽 차선
@@ -91,8 +77,8 @@ class BirdEyeView(QWidget):
     
     def Target(self, x_m, y_m):
         point = QPoint()
-        point.setX(int(self.center_x + y_m*self.scale_factor2))
-        point.setY(int(self.center_y - x_m*self.scale_factor2))
+        point.setX(int(self.center_x + y_m*self.target_factor))
+        point.setY(int(self.center_y - x_m*self.target_factor))
         return point
     
     def UPC(self):
@@ -122,36 +108,47 @@ class BirdEyeView(QWidget):
     #     if wheel.angleDelta().y()<0:
     #         label.drawPixmap(self.UPC(-100, 0)) # ui 증가 
     
-    def upgrade(self,event=QMouseEvent):
-        if event.buttons() & Qt.LeftButton:
-            canvas = QPixmap(self.UPC(100,100),self.UPC(100,100))
-            canvas.fill(Qt.black)
-            self.label.setPixmap(canvas)
+    # def upgrade(self,event=QMouseEvent):
+    #     if event.buttons() & Qt.LeftButton:
+    #         canvas = QPixmap(self.UPC(100,100),self.UPC(100,100))
+    #         canvas.fill(Qt.black)
+    #         self.label.setPixmap(canvas)
     
     def draw_grid(self, qp):
     
-        qp.setPen(QPen(QColor('#4A4A4A'), 1))
-        for x_1 in range(-100,100):
-            for y_1 in range(-100,100):
-                qp.drawLine(self.M2P(x_1, y_1), self.M2P(x_1, -y_1)) # y선
-                qp.drawLine(self.M2P(-x_1, y_1), self.M2P(x_1, y_1)) # x선
+        # qp.setPen(QPen(QColor('#4A4A4A'), 1)) # 좌표선 
+        # for x_1 in range(-100,100):
+        #     for y_1 in range(-100,100):
+        #         qp.drawLine(self.M2P(x_1, y_1), self.M2P(x_1, -y_1)) # y선
+        #         qp.drawLine(self.M2P(-x_1, y_1), self.M2P(x_1, y_1)) # x선
                 
-        qp.setPen(QPen(Qt.gray, 1))
-        qp.drawLine(self.M2P(0, -100), self.M2P(0, 100))
-        qp.drawLine(self.M2P(-100, 0), self.M2P(100, 0))
+        qp.setPen(QPen(Qt.gray, 1)) 
+        # qp.drawLine(self.M2P(0, -100), self.M2P(0, 100)) #중심x선
+        qp.drawLine(self.M2P(-100, 0), self.M2P(100, 0)) #중심 y선
+        
+    def target_lane(self,qp):
+        qp.setPen(QPen(Qt.blue, 1)) 
+        qp.drawLine(self.M2P(0.3, -100), self.M2P(0.3, 100)) #앞범퍼 끝단 선
+        qp.drawLine(self.M2P(-6, -100), self.M2P(-6, 100)) #뒷차 범처 끝단
+        
+        qp.setPen(QPen(QColor('#5F6B53'), 1 ))
+        qp.drawLine(self.M2P(0.3, -1), self.M2P(0.3, 0)) #자차 앞범퍼 와 1m
+        qp.drawLine(self.M2P(-0.3, -1), self.M2P(-0.3, 0)) #자차 뒷범퍼 와 1m
+        
+        qp.setPen(QPen(QColor('#4A4A4A'), 1)) # 좌표선 
+        qp.drawLine(self.M2P(-100, -1), self.M2P(100, -1)) # 자차와 1m
         
         qp.drawPixmap(self.M2P(0.4, -0.4), self.car)
-
             
-    def draw_objects(self, qp):
+    def draw_objects(self, qp): #타겟
         qp.setPen(QPen(Qt.red, 8))
         
         for track in self.trackList:
             qp.drawPoint(self.Target(track.x, track.y))
 
-    def draw_lane(self, qp,laneVal):
+    def draw_lane(self, qp,laneVal): #차선
         resolution = 0.5
-        qp.setPen(QPen(Qt.yellow, 1))
+        qp.setPen(QPen(QColor('#594605'), 1))
         for lane in laneVal:
             for x1 in list(np.arange(-100, 100, resolution)):
                 x2 = x1 + resolution
