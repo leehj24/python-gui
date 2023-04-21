@@ -3,10 +3,14 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
 import numpy as np
+import pandas as pd
 class Track:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        
+        # self.data = pd.read_csv("data.csv", index_col=['x','y'], enconding ='co949')
+        # self.xy = self.data['x','y']
 class Lane:
     def __init__(self, a, b, c, d):
         self.a = a
@@ -15,10 +19,11 @@ class Lane:
         self.d = d
 class BirdEyeView(QWidget):
     
-    trackList = [Track(-5, -5)]
-    leftLane = [Lane(0.0001, 0.01, -0.174, -1.5)]
-    rightLane = [Lane(0.0001, 0.01, -0.174, 1.5)]
+    trackList = [Track(-400, 0)]
+    leftLane = [Lane(0, 0, 0, -1)] #0.0001, 0.01, -0.174, -1.5
+    rightLane = [Lane(0, 0, 0, 1)] #0.0001, 0.01, -0.174, 1.5
     scale_factor = 50 #그리드 사이즈 증가
+    scale_factor2 = 1
     
     def __init__(self):
         super().__init__()
@@ -84,6 +89,12 @@ class BirdEyeView(QWidget):
         point.setY(int(self.center_y - x_m*self.scale_factor))
         return point
     
+    def Target(self, x_m, y_m):
+        point = QPoint()
+        point.setX(int(self.center_x + y_m*self.scale_factor2))
+        point.setY(int(self.center_y - x_m*self.scale_factor2))
+        return point
+    
     def UPC(self):
         
         label2 = QLabel()
@@ -136,7 +147,7 @@ class BirdEyeView(QWidget):
         qp.setPen(QPen(Qt.red, 8))
         
         for track in self.trackList:
-            qp.drawPoint(track.x, track.y)
+            qp.drawPoint(self.Target(track.x, track.y))
 
     def draw_lane(self, qp,laneVal):
         resolution = 0.5

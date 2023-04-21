@@ -10,9 +10,9 @@ import logging
 from pathlib import Path
 from birdeyeview import *
 class MyApp(QMainWindow):
-    trackList = [Track(50, 50), Track(80,80),Track(110, 110)]
-    leftLane = [Lane(0.0001, 0.03, -0.174, -1)]
-    rightLane = [Lane(0.0001, 0.03, -0.174, 1)]
+    trackList = [Track(-300, -15)]
+    leftLane = [Lane(0, 0, 0, -1)]
+    rightLane = [Lane(0, 0, 0, 1)]
     
     def __init__(self):
         super().__init__()
@@ -136,7 +136,8 @@ class MyApp(QMainWindow):
     def timeout_run(self):
         if self.isStart:
             for track in self.trackList:
-                track.x = track.x + 3
+                track.x = track.x + 1
+                
             self.bev.setTrackList(self.trackList)
             self.bev.setlane_left(self.leftLane)
             self.bev.setlane_right(self.rightLane)
