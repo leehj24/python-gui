@@ -24,8 +24,14 @@ class BirdEyeView(QWidget):
     
     def __init__(self):
         super().__init__()
-
-        self.setLayout(QHBoxLayout())
+        
+        self.grid = QGridLayout()
+        self.grid.addWidget(self.birdeye(),0,0)
+        self.grid.addWidget(self.sinario(),0,1)
+        self.setLayout(self.grid)
+        
+    def birdeye(self):
+        
         self.label = QLabel()
         self.canvas = QPixmap(self.width(),self.width())
         self.canvas.fill(Qt.black)
@@ -33,12 +39,15 @@ class BirdEyeView(QWidget):
 
         self.car = QPixmap('car.png')
         
-        self.UpdateWidget = QWidget()
-        self.UpdateWidget.setLayout(QVBoxLayout())
-        self.UpdateWidget.layout().addWidget(QSizeGrip(self))
-        self.UpdateWidget.layout().addWidget(self.label)
+        self.Layout = QVBoxLayout(self)
+        self.Layout.addWidget(self.label)
+        self.setLayout(self.Layout)
 
-        self.layout().addWidget(self.UpdateWidget)
+        # self.UpdateWidget = QWidget()
+        # self.UpdateWidget.setLayout(QVBoxLayout())
+        # self.UpdateWidget.layout().addWidget(QSizeGrip(self))
+        # self.UpdateWidget.layout().addWidget(self.label)
+        # self.layout().addWidget(self.UpdateWidget)
 
         self.center_x = self.canvas.width()/2
         self.center_y = self.canvas.height()/2
@@ -48,14 +57,34 @@ class BirdEyeView(QWidget):
         
         self.canvas_x1 = self.canvas.width()-20
         self.canvas_y1 = self.canvas.height()-20
-
+        
         self.timer = QTimer(self)
         self.timer.start(30)
         self.timer.timeout.connect(self.onTimer)
         
+    def sinario(self):
+        # groupbox = QGroupBox('파일')
+        
+        self.fileop=QLineEdit()
+        self.vehicle=QLineEdit()
+        self.dbdata=QLineEdit()
+        
+        self.vbox = QVBoxLayout()
+        self.vbox.addWidget(QLabel('File'))
+        self.vbox.addWidget(self.fileop)
+        self.vbox.addWidget(QLabel('차량'))
+        self.vbox.addWidget(self.vehicle)
+        self.vbox.addWidget(QLabel('data'))
+        self.vbox.addWidget(self.dbdata)
+        
+        self.setLayout(self.vbox)
+        
+        # groupbox.setLayout(self.vbox)
+        # return groupbox
+        
     def onTimer(self):
         self.update()
-       
+    
     def paintEvent(self, e):
         qp = QPainter(self.label.pixmap())
         qp.fillRect(self.canvas.rect(),Qt.black)
@@ -81,21 +110,20 @@ class BirdEyeView(QWidget):
         point.setY(int(self.center_y - x_m*self.target_factor))
         return point
     
-    def UPC(self):
-        
+    def UPC(self,x_m,y_m):
         label2 = QLabel()
         up_canvas2 = QPixmap()
-        up_canvas2.width(int( self.canvas_x1))
-        up_canvas2.height(int(self.canvas_y1))
+        up_canvas2.width(int( self.canvas_x + y_m*self.scale_factor))
+        up_canvas2.height(int(self.canvas_y - x_m*self.scale_factor))
         self.canvas2.fill(Qt.black)
         label2.setPixmap(up_canvas2)
         return up_canvas2
-        
+    
     def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
-        # print(self.canvas_x)
+        
         if event.angleDelta().y()>=0:
             painter = QPainter(self) # ui 증가 
-            painter.drawPixmap(self.UPC(10,10),self.UPC(10,10))
+            painter.drawPixmap(self.UPC(50,10),self.UPC(50,10))
     
         if event.angleDelta().y()<0:
             self.canvas = QPixmap(self.UPC(10,10),self.UPC(10,10)) #ui 감소
@@ -139,7 +167,7 @@ class BirdEyeView(QWidget):
         qp.drawLine(self.M2P(-100, -1), self.M2P(100, -1)) # 자차와 1m
         
         qp.drawPixmap(self.M2P(0.4, -0.4), self.car)
-            
+
     def draw_objects(self, qp): #타겟
         qp.setPen(QPen(Qt.red, 8))
         
