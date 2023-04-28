@@ -78,17 +78,14 @@ class MyApp(QMainWindow):
         self.btn_on1.clicked.connect(self.Onoff)
     
         self.btn_on2 = QPushButton('ON/OFF',self)
-        self.btn_on2.setAutoExclusive(False)
         self.btn_on2.setCheckable(True)
         self.btn_on2.clicked.connect(self.Onoff)
         
         self.btn_on3 = QPushButton('ON/OFF',self)
-        self.btn_on3.setAutoExclusive(False)
         self.btn_on3.setCheckable(True)
         self.btn_on3.clicked.connect(self.Onoff)
         
         self.btn_on4 = QPushButton('ON/OFF',self)
-        self.btn_on4.setAutoExclusive(False)
         self.btn_on4.setCheckable(True)
         self.btn_on4.clicked.connect(self.Onoff)
         
