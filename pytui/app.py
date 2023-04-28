@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import logging
 from pathlib import Path
 from birdeyeview import *
+import os
 class MyApp(QMainWindow):
     trackList = [Track(-300, -30)]
     leftLane = [Lane(0, 0, 0, -0.5)]
@@ -46,13 +47,76 @@ class MyApp(QMainWindow):
         btn_2 = QPushButton('select_csv', self)
         btn_2.clicked.connect(self.file_op)
         
+        layout = QFormLayout()
+
         self.filename = QLineEdit()
+        self.vehicle=QLineEdit()
+        self.vehicle1=QComboBox()
+        self.vehicle1.addItem('Json file')
+        self.dbdata=QLineEdit() 
+        self.dbdata1=QComboBox()
+        self.dbdata1.addItem('CSV file')
+        self.dbdata1.addItem('Exvel file')
+        
         hbox = QHBoxLayout()
         hbox.addWidget(QLabel('File'))
         hbox.addWidget(self.filename)
         hbox.addWidget(btn_2)
+
+        Hbox = QHBoxLayout()
+        Hbox.addWidget(QLabel('차량'))
+        Hbox.addWidget(self.vehicle)
+        Hbox.addWidget(self.vehicle1)
+        
+        hBox = QHBoxLayout()
+        hBox.addWidget(QLabel('data'))
+        hBox.addWidget(self.dbdata)
+        hBox.addWidget(self.dbdata1)
+        
+        self.btn_on1 = QPushButton('ON/OFF',self)
+        self.btn_on1.setCheckable(True)
+        self.btn_on1.clicked.connect(self.Onoff)
     
-        groupbox.setLayout(hbox)
+        self.btn_on2 = QPushButton('ON/OFF',self)
+        self.btn_on2.setAutoExclusive(False)
+        self.btn_on2.setCheckable(True)
+        self.btn_on2.clicked.connect(self.Onoff)
+        
+        self.btn_on3 = QPushButton('ON/OFF',self)
+        self.btn_on3.setAutoExclusive(False)
+        self.btn_on3.setCheckable(True)
+        self.btn_on3.clicked.connect(self.Onoff)
+        
+        self.btn_on4 = QPushButton('ON/OFF',self)
+        self.btn_on4.setAutoExclusive(False)
+        self.btn_on4.setCheckable(True)
+        self.btn_on4.clicked.connect(self.Onoff)
+        
+        hbox1 = QHBoxLayout()
+        hbox1.addWidget(QLabel('RRSA'))
+        hbox1.addWidget(self.btn_on1)
+        
+        hbox2 = QHBoxLayout()
+        hbox2.addWidget(QLabel('SEA'))
+        hbox2.addWidget(self.btn_on2)
+        
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel('BCA'))
+        hbox3.addWidget(self.btn_on3)
+        
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel('RESET'))
+        hbox4.addWidget(self.btn_on4)
+        
+        layout.addRow(hbox)
+        layout.addRow(Hbox)
+        layout.addRow(hBox)
+        layout.addRow(hbox1)
+        layout.addRow(hbox2)
+        layout.addRow(hbox3)
+        layout.addRow(hbox4)
+        
+        groupbox.setLayout(layout)
         return groupbox
     
     def secondGroup(self):
@@ -105,17 +169,17 @@ class MyApp(QMainWindow):
             path = Path(file_name)
             self.filename.setText(str(path)) #파일 경로
             
-        txt = path.read_text() #선택한 파일 읽기
-        f=open('data.csv','w',encoding='utf-8',newline="")
-        f.write(txt) #파일 저장
-        f.close()
+        # txt = path.read_text() #선택한 파일 읽기
+        # f=open('data.csv','w',encoding='utf-8',newline="")
+        # f.write(txt) #파일 저장
+        # f.close()
         
-        data = pd.read_csv("data.csv") #저장한 파일 pd로 읽기
-        plt.plot(data.num, data.a)
-        plt.plot(data.num, data.a1)
-        plt.plot(data.num, data.b)
-        plt.plot(data.num, data.b1)
-        plt.show()
+        # data = pd.read_csv("data.csv") #저장한 파일 pd로 읽기
+        # plt.plot(data.num, data.a)
+        # plt.plot(data.num, data.a1)
+        # plt.plot(data.num, data.b)
+        # plt.plot(data.num, data.b1)
+        # plt.show()
         
     def log(self):
         groupbox = QGroupBox('로그')
@@ -159,6 +223,36 @@ class MyApp(QMainWindow):
     def stop(self):
         self.timer.stop()
         self.isStart = False
+        
+    def Onoff(self):
+        if self.btn_on1.isChecked():
+            self.btn_on1.setText('ON')
+            
+        else:
+            self.btn_on1.setText('ON/OFF')
+            
+        if self.btn_on2.isChecked():
+            self.btn_on2.setText('ON')
+            
+        else:
+            self.btn_on2.setText('ON/OFF')
+            
+        if self.btn_on3.isChecked():
+            self.btn_on3.setText('ON')
+            
+        else:
+            self.btn_on3.setText('ON/OFF')
+            
+        if self.btn_on4.isChecked():
+            self.btn_on4.setText('ON')
+            
+        else:
+            self.btn_on4.setText('ON/OFF')
+            
+            
+    
+    # def OnOFF(self):
+    #     self.btn_off1.setText('On')
      
 if __name__ == '__main__':
     app = QApplication(sys.argv)
