@@ -200,9 +200,7 @@ class Main(QWidget):
                 legend.set_draggable(True)    
                 plt.grid(True)
                 plt.show()      
-
-                
-                
+   
     def grapherase(self): #Column 지우기
         erase_item = self.listwidget_02.currentRow()
         self.listwidget_02.takeItem(erase_item)
