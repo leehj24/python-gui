@@ -50,13 +50,21 @@ class MyApp(QMainWindow):
         layout = QFormLayout()
 
         self.filename = QLineEdit()
-        self.vehicle=QLineEdit()
+        
+        # self.vehicle=QLineEdit()
         self.vehicle1=QComboBox()
-        self.vehicle1.addItem('Json file')
-        self.dbdata=QLineEdit() 
+        file= os.listdir(os.getcwd())
+        for i in range(0, 8): 
+            self.vehicle1.addItem(file[i])
+            
+        # self.dbdata=QLineEdit() 
         self.dbdata1=QComboBox()
-        self.dbdata1.addItem('CSV file')
-        self.dbdata1.addItem('Exvel file')
+     
+        root_dir = "./verticle/"
+        for (root, dirs, files) in os.walk(root_dir):
+            if len(dirs) > 0:
+                for i in range(0,2): 
+                    self.dbdata1.addItem(dirs[i])
         
         hbox = QHBoxLayout()
         hbox.addWidget(QLabel('File'))
@@ -65,12 +73,12 @@ class MyApp(QMainWindow):
 
         Hbox = QHBoxLayout()
         Hbox.addWidget(QLabel('차량'))
-        Hbox.addWidget(self.vehicle)
+        # Hbox.addWidget(self.vehicle)
         Hbox.addWidget(self.vehicle1)
         
         hBox = QHBoxLayout()
         hBox.addWidget(QLabel('data'))
-        hBox.addWidget(self.dbdata)
+        # hBox.addWidget(self.dbdata)
         hBox.addWidget(self.dbdata1)
         
         self.btn_on1 = QPushButton('ON/OFF',self)
