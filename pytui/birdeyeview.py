@@ -2,52 +2,122 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
+from birdeyeview1 import *
+from birdeyeview2 import *
 import numpy as np
-import pandas as pd
+import os
 class Track:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-class Lane:
-    def __init__(self, a, b, c, d):
-        self.a = a
-        self.b = b
-        self.c = c
-        self.d = d
+
 class BirdEyeView(QWidget):
     
     trackList = [Track(-400, 0)]
-    leftLane = [Lane(0, 0, 0, -0.5)] #0.0001, 0.01, -0.174, -1.5
-    rightLane = [Lane(0, 0, 0, 0.5)] #0.0001, 0.01, -0.174, 1.5
     scale_factor = 50 #그리드 사이즈 증가
     target_factor = 1 # 타켓차 그리즈 사이즈 변경
     
     def __init__(self):
         super().__init__()
-        
-        self.grid = QGridLayout()
-        self.grid.addWidget(self.birdeye(),0,0)
-        self.grid.addWidget(self.sinario(),0,1)
-        self.setLayout(self.grid)
-        
-    def birdeye(self):
-        
+       
         self.label = QLabel()
         self.canvas = QPixmap(self.width(),self.width())
         self.canvas.fill(Qt.black)
         self.label.setPixmap(self.canvas)
 
         self.car = QPixmap('car.png')
+        self.FLbox = QTextBrowser(self)
+        self.FRbox = QTextBrowser(self)
+        self.RLbox = QTextBrowser(self)
+        self.RRbox = QTextBrowser(self)
+        
+        self.OEM=QComboBox()
+        file= os.listdir(os.getcwd())
+        for i in range(0, 10): 
+            self.OEM.addItem(file[i])
+            
+        self.OEM.activated[str].connect(self.fileopenActivated)
+        
+        self.vehicle1=QComboBox()
+        self.scenario=QComboBox()
+        
+        Hbox1 = QHBoxLayout()
+        Hbox1.addWidget(QLabel('OEM'))
+        Hbox1.addWidget(self.OEM)
+        
+        Hbox2 = QHBoxLayout()
+        Hbox2.addWidget(QLabel('차량'))
+        Hbox2.addWidget(self.vehicle1)
+        self.vehicle1.activated[str].connect(self.fileopenActivated1)
+        
+        Hbox3 = QHBoxLayout()
+        Hbox3.addWidget(QLabel('시나리오'))
+        Hbox3.addWidget(self.scenario)
+        
+        self.btn_on1 = QPushButton('ON/OFF',self)
+        self.btn_on1.setCheckable(True)
+        self.btn_on1.clicked.connect(self.Onoff)
+    
+        self.btn_on2 = QPushButton('ON/OFF',self)
+        self.btn_on2.setCheckable(True)
+        self.btn_on2.clicked.connect(self.Onoff)
+        
+        self.btn_on3 = QPushButton('ON/OFF',self)
+        self.btn_on3.setCheckable(True)
+        self.btn_on3.clicked.connect(self.Onoff)
+        
+        self.btn_on4 = QPushButton('ON/OFF',self)
+        # self.btn_on4.setCheckable(True)
+        self.btn_on4.clicked.connect(self.Onoff)
         
         self.Layout = QVBoxLayout(self)
-        self.Layout.addWidget(self.label)
-        self.setLayout(self.Layout)
+        
+        hbox1 = QHBoxLayout()
+        hbox1.addWidget(QLabel('RCCA'))
+        hbox1.addWidget(self.btn_on1)
+        
+        hbox2 = QHBoxLayout()
+        hbox2.addWidget(QLabel('SEA'))
+        hbox2.addWidget(self.btn_on2)
+        
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel('BCA'))
+        hbox3.addWidget(self.btn_on3)
+        
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel('RESET'))
+        hbox4.addWidget(self.btn_on4)
 
-        # self.UpdateWidget = QWidget()
-        # self.UpdateWidget.setLayout(QVBoxLayout())
-        # self.UpdateWidget.layout().addWidget(QSizeGrip(self))
-        # self.UpdateWidget.layout().addWidget(self.label)
-        # self.layout().addWidget(self.UpdateWidget)
+        self.qvbox= QVBoxLayout()
+        self.qvbox.addLayout(Hbox1)
+        self.qvbox.addLayout(Hbox2)
+        self.qvbox.addLayout(Hbox3)
+        self.qvbox.addLayout(hbox1)
+        self.qvbox.addLayout(hbox2)
+        self.qvbox.addLayout(hbox3)
+        self.qvbox.addLayout(hbox4)
+
+        self.cido=QHBoxLayout()
+        self.cido.addWidget(self.label)
+        self.cido.addLayout(self.qvbox)
+        
+        self.fl_fr = QHBoxLayout()
+        self.fl_fr.addWidget(QLabel('FL'))
+        self.fl_fr.addWidget(self.FLbox)
+        self.fl_fr.addWidget(QLabel('FR'))
+        self.fl_fr.addWidget(self.FRbox)
+        
+        self.rl_rr = QHBoxLayout(self)
+        self.rl_rr.addWidget(QLabel('RL'))
+        self.rl_rr.addWidget(self.RLbox)
+        self.rl_rr.addWidget(QLabel('RR'))
+        self.rl_rr.addWidget(self.RRbox)
+        
+        self.Layout.addLayout(self.cido)
+        self.Layout.addLayout(self.fl_fr)
+        self.Layout.addLayout(self.rl_rr)
+        
+        self.setLayout(self.Layout)
 
         self.center_x = self.canvas.width()/2
         self.center_y = self.canvas.height()/2
@@ -62,26 +132,6 @@ class BirdEyeView(QWidget):
         self.timer.start(30)
         self.timer.timeout.connect(self.onTimer)
         
-    def sinario(self):
-        # groupbox = QGroupBox('파일')
-        
-        self.fileop=QLineEdit()
-        self.vehicle=QLineEdit()
-        self.dbdata=QLineEdit()
-        
-        self.vbox = QVBoxLayout()
-        self.vbox.addWidget(QLabel('File'))
-        self.vbox.addWidget(self.fileop)
-        self.vbox.addWidget(QLabel('차량'))
-        self.vbox.addWidget(self.vehicle)
-        self.vbox.addWidget(QLabel('data'))
-        self.vbox.addWidget(self.dbdata)
-        
-        self.setLayout(self.vbox)
-        
-        # groupbox.setLayout(self.vbox)
-        # return groupbox
-        
     def onTimer(self):
         self.update()
     
@@ -90,11 +140,8 @@ class BirdEyeView(QWidget):
         qp.fillRect(self.canvas.rect(),Qt.black)
 
         self.draw_grid(qp) # 그리드 좌표선
-        self.target_lane(qp) # 타겟 관련 좌표선
         
         self.draw_objects(qp) # object 
-        self.draw_lane(qp, self.leftLane) #왼쪽 차선
-        self.draw_lane(qp, self.rightLane) #오른쪽 차선
         
         qp.end()
 
@@ -110,69 +157,15 @@ class BirdEyeView(QWidget):
         point.setY(int(self.center_y - x_m*self.target_factor))
         return point
     
-    def UPC(self,x_m,y_m):
-        label2 = QLabel()
-        up_canvas2 = QPixmap()
-        up_canvas2.width(int( self.canvas_x + y_m*self.scale_factor))
-        up_canvas2.height(int(self.canvas_y - x_m*self.scale_factor))
-        self.canvas2.fill(Qt.black)
-        label2.setPixmap(up_canvas2)
-        return up_canvas2
-    
-    def wheelEvent(self, event: QWheelEvent): #마우스 휠 이벤트 ui 크기 변경
-        
-        if event.angleDelta().y()>=0:
-            painter = QPainter(self) # ui 증가 
-            painter.drawPixmap(self.UPC(50,10),self.UPC(50,10))
-    
-        if event.angleDelta().y()<0:
-            self.canvas = QPixmap(self.UPC(10,10),self.UPC(10,10)) #ui 감소
-            self.label.setPixmap(self.canvas)
-            
-    # def wheelEvent(self,label): #마우스 휠 이벤트 ui 크기 변경
-    #     wheel = QWheelEvent
-    #     if wheel.angleDelta().y()>=0:
-    #         label.drawPixmap(self.UPC(-100, 0)) # ui 증가 
-    #     if wheel.angleDelta().y()<0:
-    #         label.drawPixmap(self.UPC(-100, 0)) # ui 증가 
-    
-    # def upgrade(self,event=QMouseEvent):
-    #     if event.buttons() & Qt.LeftButton:
-    #         canvas = QPixmap(self.UPC(100,100),self.UPC(100,100))
-    #         canvas.fill(Qt.black)
-    #         self.label.setPixmap(canvas)
-    
     def draw_grid(self, qp):
     
-        # qp.setPen(QPen(QColor('#4A4A4A'), 1)) # 좌표선 
-        # for x_1 in range(-100,100):
-        #     for y_1 in range(-100,100):
-        #         qp.drawLine(self.M2P(x_1, y_1), self.M2P(x_1, -y_1)) # y선
-        #         qp.drawLine(self.M2P(-x_1, y_1), self.M2P(x_1, y_1)) # x선
-                
-        qp.setPen(QPen(Qt.gray, 1)) 
-        # qp.drawLine(self.M2P(0, -100), self.M2P(0, 100)) #중심x선
-        qp.drawLine(self.M2P(-100, 0), self.M2P(100, 0)) #중심 y선
+        qp.drawPixmap(self.M2P(100, -100), self.car)
         
-    def target_lane(self,qp):
-        qp.setPen(QPen(Qt.blue, 1)) 
-        qp.drawLine(self.M2P(0.3, -100), self.M2P(0.3, 100)) #앞범퍼 끝단 선
-        qp.drawLine(self.M2P(-6, -100), self.M2P(-6, 100)) #뒷차 범처 끝단
-        
-        qp.setPen(QPen(QColor('#5F6B53'), 1 ))
-        qp.drawLine(self.M2P(0.3, -1), self.M2P(0.3, 0)) #자차 앞범퍼 와 1m
-        qp.drawLine(self.M2P(-0.3, -1), self.M2P(-0.3, 0)) #자차 뒷범퍼 와 1m
-        
-        qp.setPen(QPen(QColor('#4A4A4A'), 1)) # 좌표선 
-        qp.drawLine(self.M2P(-100, -1), self.M2P(100, -1)) # 자차와 1m
-        
-        qp.drawPixmap(self.M2P(0.4, -0.4), self.car)
-
     def draw_objects(self, qp): #타겟
         qp.setPen(QPen(Qt.red, 8))
         
-        for track in self.trackList:
-            qp.drawPoint(self.Target(track.x, track.y))
+        for self.track in self.trackList:
+            qp.drawPoint(self.Target(self.track.x, self.track.y))
 
     def draw_lane(self, qp,laneVal): #차선
         resolution = 0.5
@@ -186,9 +179,105 @@ class BirdEyeView(QWidget):
             
     def setTrackList(self, trackList):
         self.trackList = trackList
-
-    def setlane_left(self, leftLane):
-        self.leftLane = leftLane
-
-    def setlane_right(self, rightLane):
-        self.rightLane = rightLane
+        self.FLbox.append('x값: '+str(self.track.x-5)+
+                          '   '+' y값: '+str(self.track.y-5))
+        self.FRbox.append('x값: '+str(self.track.x+5)+
+                          '   '+' y값: '+str(self.track.y+5))
+        self.RLbox.append('x값: '+str(self.track.x-5)+
+                          '   '+' y값: '+str(self.track.y-5))
+        self.RRbox.append('x값: '+str(self.track.x-5)+
+                          '   '+' y값: '+str(self.track.y+5))
+        
+    def fileopenActivated(self,text):
+      
+        if text == 'OEM1':
+            self.vehicle1.clear()
+            root_dir = "./OEM1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(dirs) > 0:
+                    for i in range(0,2):
+                        self.vehicle1.addItem(dirs[i])
+                      
+        elif text == 'OEM2':
+            self.vehicle1.clear()
+            root_dir = "./OEM2/"
+            self.vehicle1.clear()
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(dirs) > 0:
+                    for i in range(0,2):
+                        self.vehicle1.addItem(dirs[i])
+           
+        else:
+            self.vehicle1.clear()
+            self.scenario.clear()
+            
+    def fileopenActivated1(self,text):
+        if text == 'verticle1':
+            self.scenario.clear()
+            root_dir = "./OEM1/verticle1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+                      
+        elif text == 'verticle2':
+            self.scenario.clear()
+            root_dir = "./OEM1/verticle2/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+        
+        elif text == 'verticle1.1':
+            self.scenario.clear()
+            root_dir = "./OEM2/verticle1.1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+                        
+                      
+        elif text == 'verticle2.1':
+            self.scenario.clear()
+            root_dir = "./OEM2/verticle2.1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+        else:
+            self.scenario.clear()
+            
+    def Onoff(self):
+        if self.btn_on1.isChecked():
+            self.btn_on1.setText('ON')
+            
+        else:
+            self.btn_on1.setText('ON/OFF')
+            
+        if self.btn_on2.isChecked():
+            self.btn_on2.setText('ON')
+            self.bev1 = BirdEyeView1()
+            self.cido.addWidget(self.bev1)
+            self.cido.removeWidget(self.bev1)
+            # self.cido.removeWidget(self.label)
+            
+        else:
+            self.btn_on2.setText('ON/OFF')
+            # self.cido.removeWidget(self.bev1)
+            
+        if self.btn_on3.isChecked():
+            self.btn_on3.setText('ON')
+            self.bev2 = BirdEyeView2()
+            self.cido.addWidget(self.bev2)
+            self.cido.removeWidget(self.bev2)
+            # self.cido.removeWidget(self.label)
+           
+        else:
+            self.btn_on3.setText('ON/OFF')
+            # self.cido.removeWidget(self.bev2)
+            
+        if self.btn_on4.isChecked():
+            self.btn_on4.setText('ON')
+            
+        else:
+            self.btn_on4.setText('ON/OFF')

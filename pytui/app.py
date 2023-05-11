@@ -6,10 +6,9 @@ from PyQt5 import *
 from pandas import *
 import pandas as pd
 import matplotlib.pyplot as plt
-import logging
 from pathlib import Path
 from birdeyeview import *
-import os
+
 class MyApp(QMainWindow):
     trackList = [Track(-300, -30)]
     leftLane = [Lane(0, 0, 0, -0.5)]
@@ -29,17 +28,15 @@ class MyApp(QMainWindow):
         grid.addWidget(self.firstGroup(), 0, 0)
         grid.addWidget(self.createBevGroup(), 1, 0) 
         grid.addWidget(self.secondGroup(), 2, 0)# 버튼
-        grid.addWidget(self.log(), 3, 0) #QTextBrowser, QScrollArea
-        
+      
         self.scroll = QScrollArea()
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(widget)
-        
         self.setCentralWidget(self.scroll)
         self.setWindowTitle('Absolute Positioning')
-        self.setGeometry(300, 50, 750, 950)
+        self.setGeometry(300, 50, 1000, 950)
         self.show()
         
     def firstGroup(self): 
@@ -50,77 +47,13 @@ class MyApp(QMainWindow):
         layout = QFormLayout()
 
         self.filename = QLineEdit()
-        
-        # self.vehicle=QLineEdit()
-        self.vehicle1=QComboBox()
-        file= os.listdir(os.getcwd())
-        for i in range(0, 8): 
-            self.vehicle1.addItem(file[i])
-            
-        # self.dbdata=QLineEdit() 
-        self.dbdata1=QComboBox()
-     
-        root_dir = "./verticle/"
-        for (root, dirs, files) in os.walk(root_dir):
-            if len(dirs) > 0:
-                for i in range(0,2): 
-                    self.dbdata1.addItem(dirs[i])
-        
+  
         hbox = QHBoxLayout()
         hbox.addWidget(QLabel('File'))
         hbox.addWidget(self.filename)
         hbox.addWidget(btn_2)
-
-        Hbox = QHBoxLayout()
-        Hbox.addWidget(QLabel('차량'))
-        # Hbox.addWidget(self.vehicle)
-        Hbox.addWidget(self.vehicle1)
-        
-        hBox = QHBoxLayout()
-        hBox.addWidget(QLabel('data'))
-        # hBox.addWidget(self.dbdata)
-        hBox.addWidget(self.dbdata1)
-        
-        self.btn_on1 = QPushButton('ON/OFF',self)
-        self.btn_on1.setCheckable(True)
-        self.btn_on1.clicked.connect(self.Onoff)
-    
-        self.btn_on2 = QPushButton('ON/OFF',self)
-        self.btn_on2.setCheckable(True)
-        self.btn_on2.clicked.connect(self.Onoff)
-        
-        self.btn_on3 = QPushButton('ON/OFF',self)
-        self.btn_on3.setCheckable(True)
-        self.btn_on3.clicked.connect(self.Onoff)
-        
-        self.btn_on4 = QPushButton('ON/OFF',self)
-        self.btn_on4.setCheckable(True)
-        self.btn_on4.clicked.connect(self.Onoff)
-        
-        hbox1 = QHBoxLayout()
-        hbox1.addWidget(QLabel('RRSA'))
-        hbox1.addWidget(self.btn_on1)
-        
-        hbox2 = QHBoxLayout()
-        hbox2.addWidget(QLabel('SEA'))
-        hbox2.addWidget(self.btn_on2)
-        
-        hbox3 = QHBoxLayout()
-        hbox3.addWidget(QLabel('BCA'))
-        hbox3.addWidget(self.btn_on3)
-        
-        hbox4 = QHBoxLayout()
-        hbox4.addWidget(QLabel('RESET'))
-        hbox4.addWidget(self.btn_on4)
         
         layout.addRow(hbox)
-        layout.addRow(Hbox)
-        layout.addRow(hBox)
-        layout.addRow(hbox1)
-        layout.addRow(hbox2)
-        layout.addRow(hbox3)
-        layout.addRow(hbox4)
-        
         groupbox.setLayout(layout)
         return groupbox
     
@@ -186,30 +119,16 @@ class MyApp(QMainWindow):
         # plt.plot(data.num, data.b1)
         # plt.show()
         
-    def log(self):
-        groupbox = QGroupBox('로그')
-        logTextBox = QTextBrowser(self)
-        logTextBox.setAcceptRichText(True)
-        logTextBox.setOpenExternalLinks(True)
-
-        logging.getLogger().setLevel(logging.DEBUG)
-        
-        text = logging.debug,logging.info
-        logTextBox.append(str(self.trackList))
-        
-        vbox = QVBoxLayout()
-        vbox.addWidget(logTextBox)
-        groupbox.setLayout(vbox)
-        return groupbox
-        
     def timeout_run(self):
+        self.bev1 = BirdEyeView1()
         if self.isStart:
             for track in self.trackList:
                 track.x = track.x + 1
                 
+            # self.bev.setTrackList(self.trackList)
             self.bev.setTrackList(self.trackList)
-            self.bev.setlane_left(self.leftLane)
-            self.bev.setlane_right(self.rightLane)
+            self.bev1.setlane_left(self.leftLane)
+            self.bev1.setlane_right(self.rightLane)
              
             if self.step >= 100:
                 self.step=0
@@ -229,36 +148,6 @@ class MyApp(QMainWindow):
         self.timer.stop()
         self.isStart = False
         
-    def Onoff(self):
-        if self.btn_on1.isChecked():
-            self.btn_on1.setText('ON')
-            
-        else:
-            self.btn_on1.setText('ON/OFF')
-            
-        if self.btn_on2.isChecked():
-            self.btn_on2.setText('ON')
-            
-        else:
-            self.btn_on2.setText('ON/OFF')
-            
-        if self.btn_on3.isChecked():
-            self.btn_on3.setText('ON')
-            
-        else:
-            self.btn_on3.setText('ON/OFF')
-            
-        if self.btn_on4.isChecked():
-            self.btn_on4.setText('ON')
-            
-        else:
-            self.btn_on4.setText('ON/OFF')
-            
-            
-    
-    # def OnOFF(self):
-    #     self.btn_off1.setText('On')
-     
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     myapp = MyApp()

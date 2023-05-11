@@ -1,0 +1,175 @@
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5 import *
+import os
+class Openfile(QWidget):
+    
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        
+    def initUI(self):
+
+        layout = QFormLayout()
+        
+        self.OEM=QComboBox()
+        file= os.listdir(os.getcwd())
+        for i in range(0, 9): 
+            self.OEM.addItem(file[i])
+            
+        self.OEM.activated[str].connect(self.fileopenActivated)
+        
+        self.vehicle1=QComboBox()
+        self.scenario=QComboBox()
+        
+        Hbox1 = QHBoxLayout()
+        Hbox1.addWidget(QLabel('OEM'))
+        Hbox1.addWidget(self.OEM)
+        
+        Hbox2 = QHBoxLayout()
+        Hbox2.addWidget(QLabel('차량'))
+        Hbox2.addWidget(self.vehicle1)
+        self.vehicle1.activated[str].connect(self.fileopenActivated1)
+        
+        Hbox3 = QHBoxLayout()
+        Hbox3.addWidget(QLabel('시나리오'))
+        Hbox3.addWidget(self.scenario)
+        
+        self.btn_on1 = QPushButton('ON/OFF',self)
+        self.btn_on1.setCheckable(True)
+        self.btn_on1.clicked.connect(self.Onoff)
+    
+        self.btn_on2 = QPushButton('ON/OFF',self)
+        self.btn_on2.setCheckable(True)
+        self.btn_on2.clicked.connect(self.Onoff)
+        
+        self.btn_on3 = QPushButton('ON/OFF',self)
+        self.btn_on3.setCheckable(True)
+        self.btn_on3.clicked.connect(self.Onoff)
+        
+        self.btn_on4 = QPushButton('ON/OFF',self)
+        # self.btn_on4.setCheckable(True)
+        self.btn_on4.clicked.connect(self.Onoff1)
+        
+        hbox1 = QHBoxLayout()
+        hbox1.addWidget(QLabel('RCCA'))
+        hbox1.addWidget(self.btn_on1)
+        
+        hbox2 = QHBoxLayout()
+        hbox2.addWidget(QLabel('SEA'))
+        hbox2.addWidget(self.btn_on2)
+        
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(QLabel('BCA'))
+        hbox3.addWidget(self.btn_on3)
+        
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(QLabel('RESET'))
+        hbox4.addWidget(self.btn_on4)
+    
+        layout.addRow(Hbox1)
+        layout.addRow(Hbox2)
+        layout.addRow(Hbox3)
+        layout.addRow(hbox1)
+        layout.addRow(hbox2)
+        layout.addRow(hbox3)
+        layout.addRow(hbox4)
+        
+        self.setLayout(layout)
+        
+    def fileopenActivated(self,text):
+      
+        if text == 'OEM1':
+            self.vehicle1.clear()
+            root_dir = "./OEM1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(dirs) > 0:
+                    for i in range(0,2):
+                        self.vehicle1.addItem(dirs[i])
+        
+            
+        elif text == 'OEM2':
+            self.vehicle1.clear()
+            root_dir = "./OEM2/"
+            self.vehicle1.clear()
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(dirs) > 0:
+                    for i in range(0,2):
+                        self.vehicle1.addItem(dirs[i])
+                        
+        else:
+            self.vehicle1.clear()
+            self.scenario.clear()
+           
+    def fileopenActivated1(self,text):
+        if text == 'verticle1':
+            self.scenario.clear()
+            root_dir = "./OEM1/verticle1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+                      
+        if text == 'verticle2':
+            self.scenario.clear()
+            root_dir = "./OEM1/verticle2/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+        
+        if text == 'verticle1.1':
+            self.scenario.clear()
+            root_dir = "./OEM2/verticle1.1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+                        
+                      
+        if text == 'verticle2.1':
+            self.scenario.clear()
+            root_dir = "./OEM2/verticle2.1/"
+            for (root, dirs, files) in os.walk(root_dir):
+                if len(files) > 0:
+                    for i in range(0,2):
+                        self.scenario.addItem(files[i])
+
+    def Onoff(self):
+        if self.btn_on1.isChecked():
+            self.btn_on1.setText('ON')
+            
+        else:
+            self.btn_on1.setText('ON/OFF')
+            
+        if self.btn_on2.isChecked():
+            self.btn_on2.setText('ON')
+            
+        else:
+            self.btn_on2.setText('ON/OFF')
+            
+        if self.btn_on3.isChecked():
+            self.btn_on3.setText('ON')
+            
+        else:
+            self.btn_on3.setText('ON/OFF')
+            
+        # if self.btn_on4.isChecked():
+        #     self.btn_on4.setText('ON')
+            
+        # else:
+        #     self.btn_on4.setText('ON/OFF')
+    
+    def Onoff1(self):
+            self.vehicle1.removeItem
+            self.scenario.clear  
+            self.btn_on4.setText('ON')
+            
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    myapp = Openfile()
+    myapp.show()
+    app.exec_()
+            
