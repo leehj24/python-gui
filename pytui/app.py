@@ -153,3 +153,5 @@ if __name__ == '__main__':
     myapp = MyApp()
     myapp.show()
     app.exec_()
+# http://www.guud.com/shop/goodsView?itemId=54326
+#벽시계
