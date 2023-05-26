@@ -4,11 +4,11 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
 from pandas import *
-import pandas as pd
-import matplotlib.pyplot as plt
 from pathlib import Path
 from birdeyeview import *
-
+from select_file import *
+import pandas as pd
+import matplotlib.pyplot as plt
 class MyApp(QMainWindow):
     trackList = [Track(-300, -30)]
     leftLane = [Lane(0, 0, 0, -0.5)]
@@ -41,20 +41,10 @@ class MyApp(QMainWindow):
         
     def firstGroup(self): 
         groupbox = QGroupBox('파일')
-        btn_2 = QPushButton('select_csv', self)
-        btn_2.clicked.connect(self.file_op)
-        
-        layout = QFormLayout()
-
-        self.filename = QLineEdit()
-  
+        file = Openfile()
         hbox = QHBoxLayout()
-        hbox.addWidget(QLabel('File'))
-        hbox.addWidget(self.filename)
-        hbox.addWidget(btn_2)
-        
-        layout.addRow(hbox)
-        groupbox.setLayout(layout)
+        hbox.addWidget(file)
+        groupbox.setLayout(hbox)
         return groupbox
     
     def secondGroup(self):
@@ -93,42 +83,23 @@ class MyApp(QMainWindow):
     
     def createBevGroup(self):
         self.bev = BirdEyeView()
-
+      
         vbox = QVBoxLayout()
         vbox.addWidget(self.bev)
+        
         groupbox = QGroupBox('BirdEyeView')
         groupbox.setLayout(vbox)
 
         return groupbox
-    
-    def file_op(self): # 파일선택
-        file_name, self.file = QFileDialog.getOpenFileName(self) 
-        if file_name:
-            path = Path(file_name)
-            self.filename.setText(str(path)) #파일 경로
-            
-        # txt = path.read_text() #선택한 파일 읽기
-        # f=open('data.csv','w',encoding='utf-8',newline="")
-        # f.write(txt) #파일 저장
-        # f.close()
-        
-        # data = pd.read_csv("data.csv") #저장한 파일 pd로 읽기
-        # plt.plot(data.num, data.a)
-        # plt.plot(data.num, data.a1)
-        # plt.plot(data.num, data.b)
-        # plt.plot(data.num, data.b1)
-        # plt.show()
-        
+  
     def timeout_run(self):
-        self.bev1 = BirdEyeView1()
         if self.isStart:
             for track in self.trackList:
                 track.x = track.x + 1
-                
-            # self.bev.setTrackList(self.trackList)
+            
             self.bev.setTrackList(self.trackList)
-            self.bev1.setlane_left(self.leftLane)
-            self.bev1.setlane_right(self.rightLane)
+            self.bev.setlane_left(self.leftLane)
+            self.bev.setlane_right(self.rightLane)
              
             if self.step >= 100:
                 self.step=0
@@ -153,5 +124,3 @@ if __name__ == '__main__':
     myapp = MyApp()
     myapp.show()
     app.exec_()
-# http://www.guud.com/shop/goodsView?itemId=54326
-#벽시계
