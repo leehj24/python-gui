@@ -28,6 +28,10 @@ class Button(QWidget):
         self.btn_on2.setCheckable(True)
         self.btn_on2.clicked.connect(self.Onoff)
         
+        self.btn_on2_1 = QPushButton('ON/OFF',self)
+        self.btn_on2_1.setCheckable(True)
+        self.btn_on2_1.clicked.connect(self.Onoff)
+        
         self.btn_on3 = QPushButton('ON/OFF',self)
         self.btn_on3.setCheckable(True)
         self.btn_on3.clicked.connect(self.Onoff)
@@ -44,6 +48,10 @@ class Button(QWidget):
         hbox2.addWidget(QLabel('SEA'))
         hbox2.addWidget(self.btn_on2)
         
+        hbox2_1 = QHBoxLayout()
+        hbox2_1.addWidget(QLabel('SEW'))
+        hbox2_1.addWidget(self.btn_on2_1)
+        
         hbox3 = QHBoxLayout()
         hbox3.addWidget(QLabel('BCA'))
         hbox3.addWidget(self.btn_on3)
@@ -54,6 +62,7 @@ class Button(QWidget):
 
         layout.addRow(hbox1)
         layout.addRow(hbox2)
+        layout.addRow(hbox2_1)
         layout.addRow(hbox3)
         layout.addRow(hbox4)
         groupbox.setLayout(layout)
@@ -71,6 +80,12 @@ class Button(QWidget):
             
         else:
             self.btn_on2.setText('ON/OFF')
+            
+        if self.btn_on2_1.isChecked():
+            self.btn_on2_1.setText('ON')
+            
+        else:
+            self.btn_on2_1.setText('ON/OFF')
             
         if self.btn_on3.isChecked():
             self.btn_on3.setText('ON')

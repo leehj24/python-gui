@@ -3,9 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
-import os
 import json
-
 class Openfile(QWidget):
     
     def __init__(self):
@@ -31,15 +29,13 @@ class Openfile(QWidget):
         Hbox1.addWidget(QLabel('OEM'))
         Hbox1.addWidget(self.OEM)
         
-                    
         Hbox1.addWidget(QLabel('차량'))
         Hbox1.addWidget(self.vehicle1)
         self.vehicle1.activated[str].connect(self.fileopenActivated1)
         
         Hbox1.addWidget(QLabel('시나리오'))
         Hbox1.addWidget(self.scenario)
-        self.scenario.resize(1000,200)
-
+        self.scenario.setFixedSize(300,25)
         self.setLayout(Hbox1)
         
     def fileopenActivated(self,text):
@@ -83,7 +79,7 @@ class Openfile(QWidget):
         #     self.scenario.clear()
         #     self.scenario.addItem(self.json_test[1]['vehicles'][0]['can1'])
         #     self.scenario.addItem(self.json_test[1]['vehicles'][0]['can2'])
-            
+            # rodntruzzz
         # elif text == 'name2':
         #     self.scenario.clear()
         #     self.scenario.addItem(self.json_test[1]['vehicles'][1]['can1'])
