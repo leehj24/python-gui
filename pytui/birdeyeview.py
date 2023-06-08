@@ -4,11 +4,14 @@ from PyQt5.QtCore import *
 from PyQt5 import *
 from button import *
 import numpy as np
+import pandas as pd
 
 class Track:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        x = pd.read_csv('./data.csv',usecols =['x'])
+        y = pd.read_csv('./data.csv',usecols =['y'])
 class Lane:
     def __init__(self, a, b, c, d):
         self.a = a
@@ -32,11 +35,34 @@ class BirdEyeView(QWidget):
         self.label.setPixmap(self.canvas)
 
         self.car = QPixmap('car.png')
+        self.FLbox = QTextBrowser(self)
+        self.FRbox = QTextBrowser(self)
+        self.RLbox = QTextBrowser(self)
+        self.RRbox = QTextBrowser(self)
+        
         self.opfile = Button()
         
-        self.Layout = QHBoxLayout()
-        self.Layout.addWidget(self.label)
-        self.Layout.addWidget(self.opfile)
+        self.hbox = QHBoxLayout()
+        
+        self.fl_fr = QHBoxLayout()
+        self.fl_fr.addWidget(QLabel('FL'))
+        self.fl_fr.addWidget(self.FLbox)
+        self.fl_fr.addWidget(QLabel('FR'))
+        self.fl_fr.addWidget(self.FRbox)
+        
+        self.rl_rr = QHBoxLayout()
+        self.rl_rr.addWidget(QLabel('RL'))
+        self.rl_rr.addWidget(self.RLbox)
+        self.rl_rr.addWidget(QLabel('RR'))
+        self.rl_rr.addWidget(self.RRbox)
+        
+        self.hbox.addWidget(self.label)
+        self.hbox.addWidget(self.opfile)
+        
+        self.Layout=QVBoxLayout()
+        self.Layout.addLayout(self.hbox)
+        self.Layout.addLayout(self.fl_fr)
+        self.Layout.addLayout(self.rl_rr)
         
         self.setLayout(self.Layout)
 
