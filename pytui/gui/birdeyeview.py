@@ -2,16 +2,13 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
-from button import *
+from gui.button import *
 import numpy as np
-import pandas as pd
 
 class Track:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        x = pd.read_csv('./data.csv',usecols =['x'])
-        y = pd.read_csv('./data.csv',usecols =['y'])
 class Lane:
     def __init__(self, a, b, c, d):
         self.a = a
@@ -28,13 +25,13 @@ class BirdEyeView(QWidget):
     
     def __init__(self):
         super().__init__()
-       
+        
         self.label = QLabel()
         self.canvas = QPixmap(self.width(),self.width())
         self.canvas.fill(Qt.black)
         self.label.setPixmap(self.canvas)
-
-        self.car = QPixmap('car.png')
+        
+        self.car = QPixmap('gui/car.png')
         self.FLbox = QTextBrowser(self)
         self.FRbox = QTextBrowser(self)
         self.RLbox = QTextBrowser(self)
@@ -56,28 +53,23 @@ class BirdEyeView(QWidget):
         self.rl_rr.addWidget(QLabel('RR'))
         self.rl_rr.addWidget(self.RRbox)
         
-        self.hbox.addWidget(self.label)
         self.hbox.addWidget(self.opfile)
-        
+        self.hbox.addWidget(self.label)
+
         self.Layout=QVBoxLayout()
         self.Layout.addLayout(self.hbox)
         self.Layout.addLayout(self.fl_fr)
         self.Layout.addLayout(self.rl_rr)
         
         self.setLayout(self.Layout)
-
+        
         self.center_x = self.canvas.width()/2
         self.center_y = self.canvas.height()/2
-        
-        self.canvas_x = self.canvas.width()+20
-        self.canvas_y = self.canvas.height()+20
-        
-        self.canvas_x1 = self.canvas.width()-20
-        self.canvas_y1 = self.canvas.height()-20
         
         self.timer = QTimer(self)
         self.timer.start(30)
         self.timer.timeout.connect(self.onTimer)
+        print(self.update())
         
     def onTimer(self):
         self.update()
@@ -166,4 +158,5 @@ class BirdEyeView(QWidget):
 
     def setlane_right(self, rightLane):
         self.rightLane = rightLane
+    
     

@@ -1,8 +1,5 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5 import *
 
 class Button(QWidget):
     
@@ -98,3 +95,4 @@ class Button(QWidget):
             
         else:
             self.btn_on4.setText('ON/OFF')
+            
