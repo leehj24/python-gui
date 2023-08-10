@@ -3,12 +3,15 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import *
 from gui.button import *
+from gui.select_file import *
+from test2 import List
 import numpy as np
-
 class Track:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def data(self):
+        target = List(); target.name()
+        self.x = target.List[0][1]
+        self.y = target.List[0][2]
+        # print(target.List[0][1][3])
 class Lane:
     def __init__(self, a, b, c, d):
         self.a = a
@@ -17,7 +20,7 @@ class Lane:
         self.d = d
 class BirdEyeView(QWidget):
     
-    trackList = [Track(-400, 0)]
+    trackList = Track() ; trackList.data()
     leftLane = [Lane(0, 0, 0, -0.5)] #0.0001, 0.01, -0.174, -1.5
     rightLane = [Lane(0, 0, 0, 0.5)] #0.0001, 0.01, -0.174, 1.5
     scale_factor = 50 #그리드 사이즈 증가
@@ -25,6 +28,34 @@ class BirdEyeView(QWidget):
     
     def __init__(self):
         super().__init__()
+        self.isStart = False 
+        self.index = 0
+        
+        grid = QGridLayout()
+        grid.addWidget(self.firstGroup(),0,0)
+        grid.addWidget(self.secondGroup(),1,0)
+        self.setLayout(grid)
+        
+    def firstGroup(self):
+        groupbox = QGroupBox('파일')
+        
+        self.btn = QPushButton('RUN', self)
+        self.btn.setCheckable(True)
+        self.btn.clicked.connect(self.play)
+        self.btn2 = QPushButton('STOP', self)
+        self.btn2.clicked.connect(self.stop)
+        
+        file = Openfile()
+        hbox = QHBoxLayout()
+        hbox.addWidget(file)
+        hbox.addWidget(self.btn)
+        hbox.addWidget(self.btn2)
+        
+        groupbox.setLayout(hbox)
+        return groupbox
+    
+    def secondGroup(self):
+        groupbox = QGroupBox('파일')
         
         self.label = QLabel()
         self.canvas = QPixmap(self.width(),self.width())
@@ -32,36 +63,12 @@ class BirdEyeView(QWidget):
         self.label.setPixmap(self.canvas)
         
         self.car = QPixmap('gui/car.png')
-        self.FLbox = QTextBrowser(self)
-        self.FRbox = QTextBrowser(self)
-        self.RLbox = QTextBrowser(self)
-        self.RRbox = QTextBrowser(self)
-        
         self.opfile = Button()
         
         self.hbox = QHBoxLayout()
         
-        self.fl_fr = QHBoxLayout()
-        self.fl_fr.addWidget(QLabel('FL'))
-        self.fl_fr.addWidget(self.FLbox)
-        self.fl_fr.addWidget(QLabel('FR'))
-        self.fl_fr.addWidget(self.FRbox)
-        
-        self.rl_rr = QHBoxLayout()
-        self.rl_rr.addWidget(QLabel('RL'))
-        self.rl_rr.addWidget(self.RLbox)
-        self.rl_rr.addWidget(QLabel('RR'))
-        self.rl_rr.addWidget(self.RRbox)
-        
         self.hbox.addWidget(self.opfile)
         self.hbox.addWidget(self.label)
-
-        self.Layout=QVBoxLayout()
-        self.Layout.addLayout(self.hbox)
-        self.Layout.addLayout(self.fl_fr)
-        self.Layout.addLayout(self.rl_rr)
-        
-        self.setLayout(self.Layout)
         
         self.center_x = self.canvas.width()/2
         self.center_y = self.canvas.height()/2
@@ -69,8 +76,19 @@ class BirdEyeView(QWidget):
         self.timer = QTimer(self)
         self.timer.start(30)
         self.timer.timeout.connect(self.onTimer)
-        # print(self.update())
+        print(self.update())
         
+        self.step = 0
+        self.slider = QSlider(Qt.Horizontal, self)
+        self.slider.valueChanged.connect(self.slider.setValue)
+        
+        vbox = QVBoxLayout()
+        vbox.addLayout(self.hbox)
+        vbox.addWidget(self.slider)
+        
+        groupbox.setLayout(vbox)
+        return groupbox
+    
     def onTimer(self):
         self.update()
     
@@ -139,25 +157,64 @@ class BirdEyeView(QWidget):
     def draw_objects(self, qp): #타겟
         qp.setPen(QPen(Qt.red, 8))
         
-        for self.track in self.trackList:
-            qp.drawPoint(self.Target(self.track.x, self.track.y))
-        print(self.track.x)
+        # for self.track in self.trackList:
+        #     qp.drawPoint(self.Target(self.track.x, self.track.y))
+        qp.drawPoint(self.Target(int(self.trackList.x[self.index]), 
+                                 int(self.trackList.y[self.index])))        
         
     def setTrackList(self, trackList):
         self.trackList = trackList
-        self.FLbox.append('x값: '+str(self.track.x-5)+
-                          '   '+' y값: '+str(self.track.y-5))
-        self.FRbox.append('x값: '+str(self.track.x+5)+
-                          '   '+' y값: '+str(self.track.y+5))
-        self.RLbox.append('x값: '+str(self.track.x-5)+
-                          '   '+' y값: '+str(self.track.y-5))
-        self.RRbox.append('x값: '+str(self.track.x-5)+
-                          '   '+' y값: '+str(self.track.y+5))
-        
+      
     def setlane_left(self, leftLane):
         self.leftLane = leftLane
 
     def setlane_right(self, rightLane):
         self.rightLane = rightLane
+        
+    def timeout_run(self):
+        if self.isStart:
+            if self.index < len(self.trackList.x) : # 배열의 마지막 요소가 아니라면
+                self.index += 1 # 인덱스 증가
+                if self.index >= len(self.trackList.x):
+                    self.index =0
+                self.update() # 화면 업데이트
+                
+            self.setTrackList(self.trackList)
+            self.setlane_left(self.leftLane)
+            self.setlane_right(self.rightLane)
+            
+            if self.step >= 100:
+                self.step = 0
+                return
+            
+            self.step = self.step + 0.5
+            self.slider.setValue(int(self.step))
+            
+    def play(self):
+        self.btn.setCheckable(True)
+        
+        if not self.isStart:
+            self.timer = QTimer(self)
+            self.timer.start(100)
+            self.timer.timeout.connect(self.timeout_run)
+            self.isStart = True
+            
+        if self.btn.isChecked():
+            self.btn.setText('Pause')
+            
+        else:
+            self.btn.setText('RUN')
+            self.timer.stop()
+            self.isStart = False
+            
+    def stop(self):
+        self.btn.setCheckable(False)
+        
+        self.timer.stop()
+        self.isStart = False
+        self.btn.setText('RUN')
+        self.btn.setCheckable(True)
+        self.index = 0
+        self.step = 0
     
     

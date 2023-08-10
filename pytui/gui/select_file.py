@@ -118,3 +118,9 @@ class Openfile(QWidget):
         self.settings.setValue('OEM',self.OEM.currentText())
         self.settings.setValue('vehicles',self.vehicle1.currentText())
         self.settings.setValue('scenario',self.scenario.currentText())
+        
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    myapp = Openfile()
+    myapp.show()
+    app.exec_()

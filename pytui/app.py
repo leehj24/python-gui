@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtGui import *
-from gui.main import *
+from gui.main2 import *
 from globalTimer import *
 
 class MyApp(QMainWindow):
