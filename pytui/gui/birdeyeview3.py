@@ -34,9 +34,9 @@ class BirdEyeView2(QWidget):
         super().__init__()
         self.isStart = False 
         self.running = False
-        self.index = 0
-        self.sec = 0 ; self.hora =0 ; self.minutos = 0 ;self.segundos = 0
-        
+        self.index = 0 ; self.i = 0 
+        self.sec = 0 ; self.hora =0 ; self.minutos = 0 ;self.segundos = 0 
+          
         grid = QGridLayout()
         grid.addWidget(self.firstGroup(),0,0)
         grid.addWidget(self.secondGroup(),1,0)
@@ -71,9 +71,16 @@ class BirdEyeView2(QWidget):
         self.car = QPixmap('gui/car.png')
         self.opfile = Button()
         
+        self.radian1 = QTextBrowser(self)
+        
+        self.txtbx = QHBoxLayout()
+        self.txtbx.addWidget(QLabel('radian1'))
+        self.txtbx.addWidget(self.radian1)
+        
         self.viewbx=QVBoxLayout()
         self.viewbx.addWidget(self.opfile)
-
+        self.viewbx.addLayout(self.txtbx)
+        
         self.hbox = QHBoxLayout()
         self.hbox.addLayout(self.viewbx)
         self.hbox.addWidget(self.label)
@@ -105,14 +112,13 @@ class BirdEyeView2(QWidget):
     
     def paintEvent(self, e):
         qp = QPainter(self.label.pixmap())
-        qp.fillRect(self.canvas.rect(),Qt.black)
-
+        qp.fillRect(self.canvas.rect(),Qt.black)    
+     
         self.draw_grid(qp) # 그리드 좌표선
         self.draw_objects(qp) # object 
         self.draw_lane(qp, self.leftLane)
         self.draw_lane(qp, self.rightLane)
         self.target_lane(qp)
-        
         qp.end()
 
     def M2P(self, x_m, y_m):
@@ -172,33 +178,42 @@ class BirdEyeView2(QWidget):
         qp.setPen(QPen(Qt.yellow, 8))
         qp.drawPoint(self.Target(int(self.trackList.x1[self.index]), 
                                  int(self.trackList.y1[self.index]))) 
-
-        qp.setPen(QPen(Qt.magenta, 8))
-        qp.drawPoint(340,300)    
-        qp.setPen(QPen(Qt.white, 8))
-        qp.drawPoint(400,570)    
+        qp.setPen(QPen(Qt.gray, 8))
+        qp.drawPoint(self.Target(int(self.trackList.x2[self.index]), 
+                                 int(self.trackList.y2[self.index])))
         
-    def setTrackList(self, trackList):
-        self.trackList = trackList
-   
-    def setlane_left(self, leftLane):
-        self.leftLane = leftLane
-
-    def setlane_right(self, rightLane):
-        self.rightLane = rightLane
+        # qp.setPen(QPen(Qt.white, 8))
+        # qp.drawPoint(self.Target(int(self.trackList.x3[self.index]), 
+        #                          int(self.trackList.y3[self.index]))) 
         
     def timeout_run(self):
+        Pi=math.pi ; deg=[]; deg1=[]; deg2=[] ; 
         if self.isStart:
-            if self.index < len(self.trackList.x) : # 배열의 마지막 요소가 아니라면
+            if self.index+1 < len(self.trackList.x) : # 배열의 마지막 요소가 아니라면
+                tanX1=self.trackList.x[self.index]-self.trackList.x[self.index+1]
+                tanY1=self.trackList.y[self.index]-self.trackList.y[self.index+1]
+                tanX2=self.trackList.x1[self.index]-self.trackList.x1[self.index+1]
+                tanY2=self.trackList.y1[self.index]-self.trackList.y1[self.index+1]
+                tanX3=self.trackList.x2[self.index]-self.trackList.x2[self.index+1]
+                tanY3=self.trackList.y2[self.index]-self.trackList.y2[self.index+1]
+                atan1=(math.atan2(tanY1,tanX1)*180)/Pi
+                atan2=(math.atan2(tanY2,tanX2)*180)/Pi
+                atan3=(math.atan2(tanY3,tanX3)*180)/Pi
+                if self.trackList.y1[self.index+1]>self.trackList.y1[self.index]:
+                    atan1= atan1-180; atan2=atan2+180; 
+                elif self.trackList.y1[self.index+1]<self.trackList.y1[self.index]:
+                    atan1= atan1-180; atan2=-atan2
+                if self.trackList.y2[self.index+1]>self.trackList.y2[self.index]:
+                    atan3=atan3+180 ; 
+                elif self.trackList.y2[self.index+1]<self.trackList.y2[self.index]:
+                    atan3=-atan3
                 self.index += 1 # 인덱스 증가
-                if self.index >= len(self.trackList.x):
-                    self.index =0
-                self.update() # 화면 업데이트
-                
+                deg.append(atan1); deg1.append(atan2) ; deg2.append(atan3)
+            self.tmp=[deg,deg1,deg2]
+ 
             self.setTrackList(self.trackList)
             self.setlane_left(self.leftLane)
             self.setlane_right(self.rightLane)
-            
             self.slider.setValue(int(self.index*0.2))
             
     def play(self):
@@ -216,7 +231,6 @@ class BirdEyeView2(QWidget):
             
         if self.btn.isChecked():
             self.btn.setText('Pause')
-            
         else:
             self.btn.setText('RUN')
             self.timer.stop()
@@ -233,6 +247,18 @@ class BirdEyeView2(QWidget):
         self.btn.setText('RUN')
         self.btn.setCheckable(True)
         self.index = 0; self.sec = 0
+        
+    def setTrackList(self, trackList):
+        self.trackList = trackList
+        for i in range(len(self.tmp)):
+            self.radian1.append('tgt_hdag'+str(i+1)+": "+
+                                str(self.tmp[i]))#타겟의 headingangle
+      
+    def setlane_left(self, leftLane):
+        self.leftLane = leftLane
+
+    def setlane_right(self, rightLane):
+        self.rightLane = rightLane
         
     def counter(self):
         if self.running:
